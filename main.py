@@ -4,7 +4,7 @@ export EEG_FMRI_DATASETS=/Users/apple/projects/eeg_to_fmri/datasets'''
 
 import argparse
 
-import os
+import os, sys
 
 import numpy as np
 
@@ -23,6 +23,13 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 from scipy.stats import ttest_ind
+
+def set_env_var(key, default_value):
+    if key not in os.environ:
+        os.environ[key] = default_value
+
+set_env_var('EEG_FMRI', '/Users/apple/projects/eeg_to_fmri')
+set_env_var('EEG_FMRI_DATASETS', '/Users/apple/projects/eeg_to_fmri/datasets')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',
@@ -87,18 +94,18 @@ print(f"main.py: Train Data Shapes: {eeg_train.shape, fmri_train.shape}")
 print(f"main.py: Test Data Shapes: {eeg_test.shape, fmri_test.shape}")
 
 # Vizualization
-'''from visualize_data import save_data, load_data, visualize_data, plot_fmri_sample
+# from visualize_data import save_data, load_data, visualize_data, plot_fmri_sample
 
 # After train_data and test_data are created
-save_data(train_data, test_data)
+'''save_data(train_data, test_data)
 
 # Load the data (for demonstration, not needed if running in the same session)
-eeg_train, fmri_train, eeg_test, fmri_test = load_data()
-visualize_data(eeg_train, fmri_train, eeg_test, fmri_test)
-'''
+eeg_train, fmri_train, eeg_test, fmri_test = load_data()'''
+# visualize_data(eeg_train, fmri_train, eeg_test, fmri_test)
 
-# Training and next sections which are not relevant
 '''
+# Training and next sections which are not relevant
+
 with tf.device('/CPU:0'):
 	#setup shapes and data loaders
 	eeg_shape, fmri_shape = (None,)+train_data[0].shape[1:], (None,)+train_data[1].shape[1:]

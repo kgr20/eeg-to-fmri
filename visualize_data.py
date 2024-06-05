@@ -1,20 +1,20 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-def save_data(train_data, test_data):
+'''def save_data(train_data, test_data):
     print("main.py: On to saving and vizualization...")
     np.save('eeg_train.npy', train_data[0])
     np.save('fmri_train.npy', train_data[1])
     np.save('eeg_test.npy', test_data[0])
     np.save('fmri_test.npy', test_data[1])
-    print("Data saved successfully.")
+    print("Data saved successfully.")'''
 
-def load_data():
+'''def load_data():
     eeg_train = np.load('eeg_train.npy')
     fmri_train = np.load('fmri_train.npy')
     eeg_test = np.load('eeg_test.npy')
     fmri_test = np.load('fmri_test.npy')
-    return eeg_train, fmri_train, eeg_test, fmri_test
+    return eeg_train, fmri_train, eeg_test, fmri_test'''
 
 def plot_eeg_sample(eeg_data, sample_idx=0):
     sample = eeg_data[sample_idx]
