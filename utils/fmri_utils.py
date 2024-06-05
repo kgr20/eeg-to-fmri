@@ -118,7 +118,7 @@ def get_individuals_ids(path_fmri=os.environ['EEG_FMRI']+'/datasets/01/fMRI/'):
 
 
 #need to change for individual count ~~
-def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/', resolution_factor = 5, number_individuals=1):
+def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/', resolution_factor = 5, number_individuals=16):
     
     fmri_individuals = []
     file_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
@@ -138,7 +138,7 @@ def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/',
                     int(target_shape[2]/resolution_factor))
     
     #changed this to a hard coded function, have to update to the below one for more than one individual ~~    
-    individual = file_individuals[0]
+    '''individual = file_individuals[0]
 
     fmri_file = '/3_nw_mepi_rest_with_cross.nii.gz'
 
@@ -158,10 +158,10 @@ def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/',
                                     target_shape=target_shape,
                                     interpolation='nearest')
 
-    fmri_individuals += [fmri_image]
+    fmri_individuals += [fmri_image]'''
     
-    #this is the proper way, i did for just one patient above 
-    '''for i in range(number_individuals):
+    #this is the proper way, I did for just one patient above 
+    for i in range(number_individuals):
         
         individual = file_individuals[i]
 
@@ -181,7 +181,7 @@ def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/',
                                         target_shape=target_shape,
                                         interpolation='nearest')
 
-        fmri_individuals += [fmri_image]'''
+        fmri_individuals += [fmri_image]
     print("get_individuals_paths_01 (fMRI) complete")
     return fmri_individuals
 

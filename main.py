@@ -4,7 +4,7 @@ export EEG_FMRI_DATASETS=/Users/apple/projects/eeg_to_fmri/datasets'''
 
 import argparse
 
-import os, sys
+import os
 
 import numpy as np
 
@@ -23,13 +23,6 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 
 from scipy.stats import ttest_ind
-
-def set_env_var(key, default_value):
-    if key not in os.environ:
-        os.environ[key] = default_value
-
-set_env_var('EEG_FMRI', '/Users/apple/projects/eeg_to_fmri')
-set_env_var('EEG_FMRI_DATASETS', '/Users/apple/projects/eeg_to_fmri/datasets')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('mode',

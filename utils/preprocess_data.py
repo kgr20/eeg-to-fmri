@@ -11,7 +11,7 @@ import tensorflow as tf
 import gc
 
 #should eeg_limit be true?? Change number of individuals ~~
-def dataset(dataset, n_individuals=1, interval_eeg=6, time_length=1, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
+def dataset(dataset, n_individuals=16, interval_eeg=6, time_length=1, ind_volume_fit=True, raw_eeg=False, standardize_fmri=True, standardize_eeg=True, iqr=True, file_output=None, verbose=False):
 	"""
 	time_length - refers to how big are the temporal segments considered. Default is 1, which indicates prediction of only one volume
 	"""

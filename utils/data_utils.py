@@ -47,8 +47,8 @@ n_individuals_14=None
 n_individuals_15=65#when hc and ad 88 TODO consider multiclassification setting, this will be deprecated in future versions
 
 #Changing this to 1 and 0, repsectively. this is from 8 and 2 respectively. ~~
-n_individuals_train_01 = 1
-n_individuals_test_01 = 0
+n_individuals_train_01 = 13
+n_individuals_test_01 = 3
 
 
 n_individuals_train_02 = 8
@@ -82,7 +82,7 @@ n_individuals_test_NEW=0
 
 def load_data(instances, raw_eeg=False, n_voxels=None, bold_shift=3, n_partitions=16, by_partitions=True, partition_length=None, f_resample=2, mutate_bands=False, eeg_limit=False, eeg_f_limit_h=134, eeg_f_limit_l=0, fmri_resolution_factor=4, standardize_eeg=True, standardize_fmri=True, ind_volume_fit=True, iqr_outlier=True, roi=None, roi_ica_components=None, dataset="01"):
 
-    #Load Data (this is stacking) ~~~
+    #Load Data
     eeg, bold, scalers = get_data(instances,
                                     raw_eeg=raw_eeg,
                                     n_voxels=n_voxels, bold_shift=bold_shift, n_partitions=n_partitions, 
@@ -131,7 +131,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
     print(f"data_utils.py: recording_time: {recording_time}")
     print(f"data_utils.py: fmri_volumes.shape: {fmri_volumes.shape}")
     
-    #clean fMRI signal (still missing understanding of the rest of this function ~~~)
+    #clean fMRI signal
     for i in range(len(individuals_imgs)):
         individuals_imgs[i] = individuals_imgs[i].get_fdata()
         
