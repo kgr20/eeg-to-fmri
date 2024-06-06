@@ -30,7 +30,7 @@ channels_coords_10_20= {"Fpz": (0.5,0.9),"Fp1": (0.40,0.88),"Fp2": (0.6,0.88),"A
 
 #frequency samples of each EEG dataset
 fs_01=250
-fs_02=1000
+fs_02=1000 
 fs_03=5000
 fs_04=200
 fs_05=200
@@ -109,15 +109,15 @@ def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/E
 	# Adding this to test if there are any .vhdr files
 	vhdr_files = [f for f in brainvision_files if f.endswith('.vhdr')]
 	if not vhdr_files:
-		raise FileNotFoundError("No .vhdr file found in the specified directory.")
+		raise FileNotFoundError("No .vhdr file")
 	vhdr_file = vhdr_files[0]  # Use the first .vhdr file found
 
 	# Construct the complete path to the .vhdr file
 	complete_path = path + vhdr_file
-
+	print(f"complete_path: {complete_path}")
 	# Read the raw brainvision file
+	print(f"mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0){mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)}")
 	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
-
 	# Print a completion message
 	print("get_eeg_instance_01 complete")
 
@@ -166,6 +166,7 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
 		path = path_eeg + '/' + run + '/EEG_noGA.mat'
 
 	eeg_file = loadmat(path)
+	print(f"eeg_file.shape{eeg_file.shape}")
 	
 	return eeg_file['data_noGA'][:43,:]
 

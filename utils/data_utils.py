@@ -34,7 +34,7 @@ threshold_plot_05=0.37
 n_individuals_01=1
 
 
-n_individuals_02=10
+n_individuals_02=17 #changing this from 10 because there are 17
 n_individuals_03=20
 n_individuals_04=10
 n_individuals_05=17
@@ -51,8 +51,8 @@ n_individuals_train_01 = 13
 n_individuals_test_01 = 3
 
 
-n_individuals_train_02 = 8
-n_individuals_test_02 = 2
+n_individuals_train_02 = 13 # changing this to 13 from 8 as we added more obs
+n_individuals_test_02 = 4 # changing this to 4 from 2 as we added more obs
 n_individuals_train_03 = 16
 n_individuals_test_03 = 4
 n_individuals_train_04 = 8
@@ -181,7 +181,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
             # fs_sample is 250
             len_channels = len(eeg.ch_names)
             # 64 channels for Noddi
-        
+            # NODDI is 162023 long
         x_instance = []
         #eeg
         for channel in range(len_channels):
@@ -196,6 +196,8 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
                 x_instance += [Zxx]
+                print(f"-------len(x_instance){len(Zxx)}")
+
             
         if(standardize_eeg):
             x_instance = zscore(np.array(x_instance))

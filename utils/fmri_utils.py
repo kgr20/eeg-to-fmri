@@ -45,12 +45,12 @@ n_volumes_04=180-bold_shift_04
 n_volumes_05=300-bold_shift_05
 
 media_directory=os.environ['EEG_FMRI_DATASETS']+"/"
-dataset_01="ds000001"
-dataset_02="ds000116"
-dataset_03="ds002158"
+dataset_01="ds000001" # Noddi
+dataset_02="ds000116" # Oddball
+dataset_03="ds002158" # CN-EPFL
 dataset_04="ds002336"
 dataset_05="ds002338"
-dataset_NEW="NEW" #also keeping this one the same, i think it is only for the file path definition
+dataset_NEW="NEW"
 
 ##########################################################################################################################
 #
@@ -137,30 +137,7 @@ def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/',
                     int(target_shape[1]/resolution_factor), 
                     int(target_shape[2]/resolution_factor))
     
-    #changed this to a hard coded function, have to update to the below one for more than one individual ~~    
-    '''individual = file_individuals[0]
 
-    fmri_file = '/3_nw_mepi_rest_with_cross.nii.gz'
-
-    individual_path = path_fmri + individual + fmri_file
-    
-    img = image.load_img(individual_path)
-    # Now, img holds the fMRI
-    print(f"fmri_utils.py: img.shape {img.shape} (this is the raw fMRI)")
-
-    #scale affine accordingly
-    off_set = img.affine[:,3]
-    new_affine = img.affine*resolution_factor
-    new_affine[:,3] = off_set
-    
-    fmri_image = image.resample_img(img, 
-                                    target_affine=new_affine,
-                                    target_shape=target_shape,
-                                    interpolation='nearest')
-
-    fmri_individuals += [fmri_image]'''
-    
-    #this is the proper way, I did for just one patient above 
     for i in range(number_individuals):
         
         individual = file_individuals[i]
@@ -189,33 +166,37 @@ def get_individuals_paths_01(path_fmri=os.environ['EEG_FMRI']+'/datasets/fMRI/',
 def get_individuals_paths_02(path_fmri=os.environ['EEG_FMRI']+"/datasets/02/", task=1, run=1, resolution_factor = 1, number_individuals=10):
     
     task_run = "task" + '%03d' % (task,) + "_run" + '%03d' % (run,)
-    
+    # task_run: task001_run001
+
     fmri_individuals = []
     
     dir_individuals = sorted([f for f in listdir(path_fmri) if isdir(join(path_fmri, f))])
-    
+    # dir_individuals: ['ds116']
+
     #target_shape = image.load_img(path_fmri + file_individuals[0] + '/3_nw_mepi_rest_with_cross.nii.gz').shape
     #target_shape = (int(target_shape[0]/resolution_factor), 
     #      int(target_shape[1]/resolution_factor), 
     #      int(target_shape[2]/resolution_factor))
     
     affine = np.zeros((4,4))
-    
+    # Addine is a 4x4 matrix of zeros
+
+    print(f"number_individuals:{number_individuals}")
     for i in range(number_individuals):
         individual_path = path_fmri + dir_individuals[i] + "/BOLD/" + task_run + "/bold.nii.gz"
-        
+        # individual_path: /Users/apple/projects/eeg_to_fmri/datasets/02/sub001/BOLD/task001_run001/bold.nii.gz
         img = image.load_img(individual_path)
-        
         affine+=img.affine
         shape=img.shape[:-1]
-        
+        # fmri (img.shape) (64, 64, 32, 170)
+
         #fmri_image = image.resample_img(img, 
         #           target_affine=new_affine,
         #           target_shape=target_shape,
         #           interpolation='nearest')
 
         fmri_individuals += [img]
-    
+        # fmri_individuals: [<nibabel.nifti1.Nifti1Image object at 0x7fca8bd64520>, <nibabel.nifti1.Nifti1Image object at 0x7fca8bd64610>...
     affine/=number_individuals
     
     #scale affine accordingly
