@@ -166,7 +166,7 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
 		path = path_eeg + '/' + run + '/EEG_noGA.mat'
 
 	eeg_file = loadmat(path)
-	print(f"eeg_file.shape{eeg_file.shape}")
+	# print(f"eeg_file.shape{eeg_file.shape}")
 	
 	return eeg_file['data_noGA'][:43,:]
 
@@ -446,7 +446,7 @@ def get_eeg_dataset(number_individuals=16, path_eeg=os.environ['EEG_FMRI']+'/dat
 frequency_bands = {'delta': [0.5,4], 'theta': [4,8], 'alpha': [8,13], 'beta': [13,30], 'gamma': [30, 100]}
 
 
-def compute_fft(channel, fs=128, limit=False, f_limit_h=134, f_limit_l=0):
+def compute_fft(channel, fs=128, limit=False, f_limit_h=13400, f_limit_l=0): #f_limit_h=134
 	assert f_limit_l < f_limit_h, "Bound frequency limit lower should be lower than higher"
 	assert f_limit_l>=0 and f_limit_h>0, "Bounds of frequency should be positive"
 
@@ -458,7 +458,8 @@ def compute_fft(channel, fs=128, limit=False, f_limit_h=134, f_limit_l=0):
 		if(fft1.shape[0]>f_limit_h):
 			return fft1[range(f_limit_l, f_limit_h)]
 		return np.append(fft1, np.zeros((f_limit_h-fft1.shape[0],), dtype=np.complex))
-	return fft1[range(int(N/2))]
+	return fft1[range(int(N))]
+	# return fft1[range(int(N/2))]
 
 def raw_eeg(eeg, channel=0, fs=250):
 	signal = eeg[channel][:]
