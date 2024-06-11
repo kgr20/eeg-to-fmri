@@ -16,6 +16,8 @@ from pathlib import Path
 
 import csv
 
+from utils.check_correct_vhdr import check_correct_vhdr
+
 home = str(Path.home())
 
 channels_01=['Fp1', 'Fp2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 'F7', 'F8', 'T7', 'T8', 'P7', 'P8', 'Fz', 'Cz', 'Pz', 'Oz', 'FC1', 'FC2', 'CP1', 'CP2', 'FC5', 'FC6', 'CP5', 'CP6', 'TP9', 'TP10', 'POz', 'ECG', 'AF3', 'AF4', 'FC3', 'FC4', 'CP3', 'CP4', 'PO3', 'PO4', 'F5', 'F6', 'C5', 'C6', 'P5', 'P6', 'AF7', 'AF8', 'FT7', 'FT8', 'TP7', 'TP8', 'PO7', 'PO8', 'FT9', 'FT10', 'P9', 'P10', 'PO9', 'PO10', 'O9', 'O10', 'Fpz', 'CPz']
@@ -93,7 +95,7 @@ def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/E
 	if individual < 0 or individual >= len(individuals):
 		raise IndexError("The individual index is out of range.")
 	
-	# Get the individual based on the index
+	# Get the individual based on the indexpy
 	individual = individuals[individual]
 	print("Individual:" + str(individual))
 
@@ -102,6 +104,8 @@ def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/E
 		path = path_eeg + individual + '/export/'
 	else:
 		path = path_eeg + individual + '/raw/'
+
+	check_correct_vhdr(path, verbose=True) # Check the vhdr and update if needed
 
 	# Get the list of brainvision files
 	brainvision_files = sorted([f for f in listdir(path) if isfile(join(path, f))])
@@ -117,10 +121,11 @@ def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/E
 	print(f"complete_path: {complete_path}")
 	# Read the raw brainvision file
 	print(f"mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0){mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)}")
-	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 	# Print a completion message
-	print("get_eeg_instance_01 complete")
+	print("eeg_utils.py: get_eeg_instance_01 complete")
 
+	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
+	
 #original function
 '''def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/01/EEG/', preprocessed=True):
 
@@ -166,8 +171,13 @@ def get_eeg_instance_02(individual, task=0, run=0, total_runs=3, preprocessed=Tr
 		path = path_eeg + '/' + run + '/EEG_noGA.mat'
 
 	eeg_file = loadmat(path)
-	# print(f"eeg_file.shape{eeg_file.shape}")
 	
+	eeg_data = eeg_file['data_noGA']
+	# print(eeg_data.shape)
+	# print(f"eeg_file.keys{eeg_file.keys()}") #(cannot, no shape attribute)
+	#eeg_ex = eeg_file['data_noGA'][:43,:]
+	#print(f"eeg_file['data_noGA'][:43,:]: {len(eeg_ex)}")
+
 	return eeg_file['data_noGA'][:43,:]
 
 
@@ -446,7 +456,7 @@ def get_eeg_dataset(number_individuals=16, path_eeg=os.environ['EEG_FMRI']+'/dat
 frequency_bands = {'delta': [0.5,4], 'theta': [4,8], 'alpha': [8,13], 'beta': [13,30], 'gamma': [30, 100]}
 
 
-def compute_fft(channel, fs=128, limit=False, f_limit_h=13400, f_limit_l=0): #f_limit_h=134
+def compute_fft(channel, fs=128, limit=False, f_limit_h=134, f_limit_l=0):
 	assert f_limit_l < f_limit_h, "Bound frequency limit lower should be lower than higher"
 	assert f_limit_l>=0 and f_limit_h>0, "Bounds of frequency should be positive"
 
@@ -479,6 +489,7 @@ def stft(eeg, channel=0, window_size=2, fs=250, limit=False, f_limit_h=134, f_li
 	else:
 		signal = signal.reshape((signal.shape[0]))
 	#signal.shape for individual 1 is (162023,)
+
 	if(start_time == None):
 		start_time = 0
 	if(stop_time == None):
@@ -490,13 +501,12 @@ def stft(eeg, channel=0, window_size=2, fs=250, limit=False, f_limit_h=134, f_li
 
 
 	fs_window_size = int(window_size*fs)
-
-
+	
 	Z = []
 	seconds = 0
 	for time in range(start_time, stop_time, fs_window_size)[:-1]:
 		fft1 = compute_fft(signal[time:time+fs_window_size], fs=fs, limit=limit, f_limit_h=f_limit_h, f_limit_l=f_limit_l)
-
+		# print(fft1.shape)
 		N = len(signal[time:time+fs_window_size])/2
 		f = np.linspace (0, len(fft1), int(N/2))
 

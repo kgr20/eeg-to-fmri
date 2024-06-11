@@ -30,8 +30,8 @@ threshold_plot_03=0.37
 threshold_plot_04=0.37
 threshold_plot_05=0.37
 
-#Changed this to 1 from 10 because i am taking only the first
-n_individuals_01=1
+
+n_individuals_01=16
 
 
 n_individuals_02=17 #changing this from 10 because there are 17
@@ -170,7 +170,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
 
     individuals_imgs = fmri_volumes
     individuals_eegs = None
-       
+    print(f"-----------------{individuals}")
     for individual in individuals:
         eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
         if(dataset=="02"):

@@ -28,13 +28,14 @@ def dataset(dataset, n_individuals=16, interval_eeg=6, time_length=1, ind_volume
 
 	if(dataset in ["02","03","04","05"]):
 		eeg_limit=True
-		eeg_f_limit_h=135
+		eeg_f_limit_h=270 #changed from 135
 		eeg_f_limit_l=0
 	else:
 		eeg_limit=False
 		eeg_f_limit_h=135
 		eeg_f_limit_l=0
 
+	print(f"preprocess_data.py: n_individuals: {n_individuals}")
 	eeg_train, fmri_train, scalers = data_utils.load_data(list(range(n_individuals)), raw_eeg=raw_eeg, n_voxels=None, 
 															bold_shift=getattr(fmri_utils, "bold_shift_"+dataset), n_partitions=25, 
 															mutate_bands=False,

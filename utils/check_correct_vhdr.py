@@ -9,7 +9,9 @@ def check_correct_vhdr(data_dir: Path, verbose=True):
         verbose (bool): print logs or not
     """
     # list data file (.eeg or .dat)
+    data_dir = Path(data_dir)  # Adding conversion to Path object
     data_path = glob.glob(str(data_dir/'*.dat')) + glob.glob(str(data_dir/'*.eeg'))
+
     # list marker file
     vmrk_path = glob.glob(str(data_dir/'*.vmrk'))
     # list vhdr file
@@ -46,3 +48,6 @@ def check_correct_vhdr(data_dir: Path, verbose=True):
             file.writelines(lines)
         if verbose:
             print(f'Updated metadata to {vhdr_path}')
+
+
+

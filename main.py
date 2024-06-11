@@ -75,7 +75,7 @@ n_individuals=getattr(data_utils, "n_individuals_"+dataset)
 threshold_plot=getattr(data_utils, "threshold_plot_"+dataset)
 print(f"main.py: n_individuals is {n_individuals}")
 #return_test returns the test set, this is not active when running validation optimization
-#setup_tf sets the tensorflow memory growth on GPU, this should not be done when already set, which is the case
+#setup_tf sets the tensorflow memo	ry growth on GPU, this should not be done when already set, which is the case
 train_data, test_data = process_utils.load_data_eeg_fmri(dataset, n_individuals, n_volumes, interval_eeg, gpu_mem, return_test=True, setup_tf=False)
 
 #updating the data definitions
