@@ -87,14 +87,15 @@ print(f"main.py: Train Data Shapes: {eeg_train.shape, fmri_train.shape}")
 print(f"main.py: Test Data Shapes: {eeg_test.shape, fmri_test.shape}")
 
 # Vizualization
-# from visualize_data import save_data, load_data, visualize_data, plot_fmri_sample
+from visualize_data import save_data_to_hdf5, visualize_data, plot_fmri_sample
 
 # After train_data and test_data are created
-'''save_data(train_data, test_data)
+'''directory = "/Users/apple/Desktop/EEG-fMRI_Training"
+save_data_to_hdf5(eeg_train, fmri_train, eeg_test, fmri_test, directory)'''
+plot_fmri_sample(fmri_train)
 
-# Load the data (for demonstration, not needed if running in the same session)
-eeg_train, fmri_train, eeg_test, fmri_test = load_data()'''
-# visualize_data(eeg_train, fmri_train, eeg_test, fmri_test)
+
+print(f"Processing complete for dataset {dataset}")
 
 '''
 # Training and next sections which are not relevant

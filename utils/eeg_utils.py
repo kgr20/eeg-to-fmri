@@ -119,11 +119,10 @@ def get_eeg_instance_01(individual, path_eeg=os.environ['EEG_FMRI']+'/datasets/E
 	# Construct the complete path to the .vhdr file
 	complete_path = path + vhdr_file
 	print(f"complete_path: {complete_path}")
-	# Read the raw brainvision file
-	print(f"mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0){mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)}")
+	
 	# Print a completion message
 	print("eeg_utils.py: get_eeg_instance_01 complete")
-
+	# Read the raw brainvision file	
 	return mne.io.read_raw_brainvision(complete_path, preload=False, verbose=0)
 	
 #original function
@@ -468,6 +467,7 @@ def compute_fft(channel, fs=128, limit=False, f_limit_h=134, f_limit_l=0):
 		if(fft1.shape[0]>f_limit_h):
 			return fft1[range(f_limit_l, f_limit_h)]
 		return np.append(fft1, np.zeros((f_limit_h-fft1.shape[0],), dtype=np.complex))
+	
 	return fft1[range(int(N))]
 	# return fft1[range(int(N/2))]
 
@@ -498,22 +498,26 @@ def stft(eeg, channel=0, window_size=2, fs=250, limit=False, f_limit_h=134, f_li
 
 	t = []
 
-
-
 	fs_window_size = int(window_size*fs)
 	
 	Z = []
 	seconds = 0
 	for time in range(start_time, stop_time, fs_window_size)[:-1]:
 		fft1 = compute_fft(signal[time:time+fs_window_size], fs=fs, limit=limit, f_limit_h=f_limit_h, f_limit_l=f_limit_l)
-		# print(fft1.shape)
+		# print(fft1.shape) # This is (270,)
+
 		N = len(signal[time:time+fs_window_size])/2
 		f = np.linspace (0, len(fft1), int(N/2))
 
 		#average
-		Z += [list(abs(fft1[1:]))]
+		# print(fft1.shape) # This is 270
+		Z += [list(abs(fft1[1:]))] # Here is where the DC component (first, zero frequency) is removed
+		# print(f"Number of FFT windows in Z: {len(Z)}") # Cycling through each element
+		# print(f"Length of the appended element in Z: {len(Z[-1])}") #Last element length is 269
+
 		t += [seconds]
 		seconds += window_size
+	
 	return f[1:], np.transpose(np.array(Z)), t
 	# Values returned: 
 		# Frequency Range (from a bit over 1 to 135), 

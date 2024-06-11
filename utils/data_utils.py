@@ -170,7 +170,7 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
 
     individuals_imgs = fmri_volumes
     individuals_eegs = None
-    print(f"-----------------{individuals}")
+    # print(f"{individuals}")
     for individual in individuals:
         eeg = getattr(eeg_utils, "get_eeg_instance_"+dataset)(individual)
         if(dataset=="02"):
@@ -192,6 +192,9 @@ def get_data(individuals, raw_eeg=False, raw_eeg_resample=False, eeg_resample=2.
                 x_instance += [x]
             else:
                 f, Zxx, t = eeg_utils.stft(eeg, channel=channel, window_size=f_resample, fs=getattr(eeg_utils, "fs_"+dataset), limit=eeg_limit, f_limit_h=eeg_f_limit_h, f_limit_l=eeg_f_limit_l)
+                # print(f.shape)
+                # print(Zxx.shape)
+                # print(t)
                 # Frequency range, magnitude spectogram, time steps
                 if(mutate_bands):
                     Zxx = eeg_utils.mutate_stft_to_bands(Zxx, f, t)
