@@ -9,12 +9,22 @@ from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import time
 import torchmetrics
+import os
+import datetime
+
+# For Drive, need to update if want to run locally or on server
+from google.colab import drive
+drive.mount('/content/drive')
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load the data
-data_path = '/home/aca10131kr/datasets/01_eeg_fmri_data.h5'
+if os.path.ismount('/content/drive'):
+    data_path = '/content/drive/MyDrive/01_eeg_fmri_data.h5'
+else:
+    data_path = '/home/aca10131kr/datasets/01_eeg_fmri_data.h5'
+
 with h5py.File(data_path, 'r') as f:
     eeg_data = np.array(f['eeg_train'][:])
     fmri_data = np.array(f['fmri_train'][:])
@@ -33,7 +43,7 @@ eeg_test = (eeg_test - np.min(eeg_test)) / (np.max(eeg_test) - np.min(eeg_test))
 fmri_test = (fmri_test - np.min(fmri_test)) / (np.max(fmri_test) - np.min(fmri_test))
 
 # Select a small subset of the data (e.g., 200 samples)
-subset_size = 200
+subset_size = 2
 eeg_subset = eeg_train[:subset_size]
 fmri_subset = fmri_train[:subset_size]
 
@@ -140,7 +150,7 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0
 clip_value = 1.0
 
 # Training loop with timing and SSIM tracking
-num_epochs = 20  # Reduce the number of epochs
+num_epochs = 200  # Reduce the number of epochs
 total_training_time = 0.0
 best_ssim = -1.0
 best_model_weights = None
@@ -204,13 +214,17 @@ torch.save(best_model_weights, '/content/drive/MyDrive/model_best_ssim.pth')
 
 # Function to plot comparison between ground truth and generated output
 def plot_comparison(labels, outputs, slice_idx, depth_idx, output_dir='/content/drive/MyDrive/output_images'):
+    import os
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+    
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-
+    
     # Get specific slice and depth
     label_slice = labels[slice_idx, 0, :, :, depth_idx]
     output_slice = outputs[slice_idx, 0, :, :, depth_idx]
     diff_slice = np.abs(label_slice - output_slice)
-
+    
     axes[0].imshow(label_slice, cmap='gray')
     axes[0].set_title('Ground Truth')
 
@@ -221,7 +235,13 @@ def plot_comparison(labels, outputs, slice_idx, depth_idx, output_dir='/content/
     axes[2].set_title('Difference')
 
     plt.suptitle(f'Depth Index: {depth_idx}')
-    plt.savefig(os.path.join(output_dir, f'comparison_slice{slice_idx}_depth{depth_idx}.png'))
+    
+    # Get current date and time
+    current_time = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    
+    # Save the figure with date and time in the filename
+    filename = os.path.join(output_dir, f'{current_time}_comparison_slice{slice_idx}_depth{depth_idx}.png')
+    plt.savefig(filename)
     plt.close()
 
 # Put the model in evaluation mode
