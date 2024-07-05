@@ -12,6 +12,18 @@ import wandb
 from datetime import datetime
 import argparse
 from google.colab import drive
+import sys
+
+# Simulate command-line arguments
+sys.argv = ['script_name', 
+            '--dataset_name', '02', 
+            '--data_path', '/content/drive/MyDrive', 
+            '--model_save_path', '/content/drive/MyDrive/Models', 
+            '--output_image_path', '/content/drive/MyDrive/output_images', 
+            '--num_epochs', '20', 
+            '--batch_size', '32', 
+            '--learning_rate', '0.0001', 
+            '--weight_decay', '1e-5']
 
 # Argument parsing
 parser = argparse.ArgumentParser(description="EEG to fMRI Autoencoder Training Script")
@@ -31,7 +43,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # W&B
 wandb.login()
 
-# drive if you want
+# Mount Google Drive
 drive.mount('/content/drive')
 
 # Load the data
@@ -56,8 +68,8 @@ eeg_test = (eeg_test - np.min(eeg_test)) / (np.max(eeg_test) - np.min(eeg_test))
 fmri_test = (fmri_test - np.min(fmri_test)) / (np.max(fmri_test) - np.min(fmri_test))
 
 # Get the output size
-output_size = output_size = fmri_train.shape[3]
-print(f"output_size:{output_size}")
+output_size = fmri_train.shape[3]
+print(f"output_size: {output_size}")
 
 # Create a dataset class
 class EEGfMRIDataset(Dataset):
@@ -79,6 +91,8 @@ print("EEG Test Shape:", eeg_test.shape)
 print("fMRI Test Shape:", fmri_test.shape)
 
 # Number of observations to include from the training and test sets
+# train_subset_size = 20
+# test_subset_size = 4
 train_subset_size = len(eeg_train)
 test_subset_size = len(eeg_test)
 
@@ -200,7 +214,7 @@ for epoch in range(args.num_epochs):
     for inputs, labels in train_loader:
         inputs = inputs.to(device)
         labels = labels.to(device)
-        labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :30] # CHECK THIS Kris
+        labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :output_size]
 
         optimizer.zero_grad()
         outputs = model(inputs)
@@ -225,7 +239,7 @@ for epoch in range(args.num_epochs):
         for inputs, labels in test_loader:
             inputs = inputs.to(device)
             labels = labels.to(device)
-            labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :30] # CHECK THIS Kris
+            labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :output_size]
             outputs = model(inputs)
             ssim_score += 1 - criterion(outputs, labels).item()
             psnr_score += calculate_psnr(outputs, labels)
