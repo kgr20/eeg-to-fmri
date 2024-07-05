@@ -11,6 +11,7 @@ import os
 import wandb
 from datetime import datetime
 import argparse
+from google.colab import drive
 
 # Argument parsing
 parser = argparse.ArgumentParser(description="EEG to fMRI Autoencoder Training Script")
@@ -26,6 +27,12 @@ args = parser.parse_args()
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# W&B
+wandb.login()
+
+# drive if you want
+drive.mount('/content/drive')
 
 # Load the data
 data_path = os.path.join(args.data_path, f"{args.dataset_name}_eeg_fmri_data.h5")
@@ -76,6 +83,11 @@ eeg_train_subset = eeg_train[:train_subset_size]
 fmri_train_subset = fmri_train[:train_subset_size]
 eeg_test_subset = eeg_test[:test_subset_size]
 fmri_test_subset = fmri_test[:test_subset_size]
+
+print("EEG Subset Train Shape:", eeg_train_subset.shape)
+print("fMRI Subset Train Shape:", fmri_train_subset.shape)
+print("EEG Subset Test Shape:", eeg_test_subset.shape)
+print("fMRI Subset Test Shape:", fmri_test_subset.shape)
 
 train_dataset = EEGfMRIDataset(torch.tensor(eeg_train_subset, dtype=torch.float32), torch.tensor(fmri_train_subset, dtype=torch.float32))
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
