@@ -20,7 +20,7 @@ sys.argv = ['script_name',
             '--data_path', '/content/drive/MyDrive', 
             '--model_save_path', '/content/drive/MyDrive/Models', 
             '--output_image_path', '/content/drive/MyDrive/output_images', 
-            '--num_epochs', '20', 
+            '--num_epochs', '200', 
             '--batch_size', '32', 
             '--learning_rate', '0.0001', 
             '--weight_decay', '1e-5']
