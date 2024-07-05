@@ -55,6 +55,10 @@ fmri_train = (fmri_train - np.min(fmri_train)) / (np.max(fmri_train) - np.min(fm
 eeg_test = (eeg_test - np.min(eeg_test)) / (np.max(eeg_test) - np.min(eeg_test))
 fmri_test = (fmri_test - np.min(fmri_test)) / (np.max(fmri_test) - np.min(fmri_test))
 
+# Get the output size
+output_size = output_size = fmri_train.shape[3]
+print(f"output_size:{output_size}")
+
 # Create a dataset class
 class EEGfMRIDataset(Dataset):
     def __init__(self, eeg_data, fmri_data):
@@ -97,8 +101,9 @@ test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False
 
 # Define the deeper and wider model
 class DeeperWiderConvAutoencoder(nn.Module):
-    def __init__(self):
+    def __init__(self, output_size):
         super(DeeperWiderConvAutoencoder, self).__init__()
+        self.output_size = output_size
         # Encoder
         self.encoder = nn.Sequential(
             nn.Conv3d(1, 64, kernel_size=3, stride=2, padding=1),
@@ -139,7 +144,7 @@ class DeeperWiderConvAutoencoder(nn.Module):
             nn.BatchNorm3d(64),
             nn.ReLU(True),
             nn.ConvTranspose3d(64, 1, kernel_size=3, stride=2, padding=1, output_padding=1),
-            nn.Upsample(size=(64, 64, 28), mode='trilinear', align_corners=True),
+            nn.Upsample(size=(64, 64, self.output_size), mode='trilinear', align_corners=True),
             nn.Sigmoid()
         )
 
@@ -163,7 +168,7 @@ timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
 run = wandb.init(project="eeg_fmri_project", name=f"dataset_{args.dataset_name}_run_{timestamp}")
 
 # Initialize the model
-model = DeeperWiderConvAutoencoder().to(device)
+model = DeeperWiderConvAutoencoder(output_size=output_size).to(device)
 
 # Define the loss function
 criterion = SSIMLoss().to(device)
@@ -195,7 +200,7 @@ for epoch in range(args.num_epochs):
     for inputs, labels in train_loader:
         inputs = inputs.to(device)
         labels = labels.to(device)
-        labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
+        labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :30] # CHECK THIS Kris
 
         optimizer.zero_grad()
         outputs = model(inputs)
@@ -220,7 +225,7 @@ for epoch in range(args.num_epochs):
         for inputs, labels in test_loader:
             inputs = inputs.to(device)
             labels = labels.to(device)
-            labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
+            labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :30] # CHECK THIS Kris
             outputs = model(inputs)
             ssim_score += 1 - criterion(outputs, labels).item()
             psnr_score += calculate_psnr(outputs, labels)
