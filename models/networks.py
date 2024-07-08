@@ -120,6 +120,8 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
         net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=9)
     elif netG == 'resnet_6blocks':
         net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6)
+    elif netG == 'resnet_3blocks':
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=1)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -284,7 +286,8 @@ class ResnetGenerator(nn.Module):
     We adapt Torch code and idea from Justin Johnson's neural style transfer project(https://github.com/jcjohnson/fast-neural-style)
     """
 
-    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, n_blocks=6, padding_type='reflect'):
+    def __init__(self, input_nc, output_nc, ngf=64, norm_layer=nn.BatchNorm2d, use_dropout=False, 
+                 n_blocks=6, padding_type='reflect', output_size=64):
         """Construct a Resnet-based generator
 
         Parameters:
@@ -295,6 +298,7 @@ class ResnetGenerator(nn.Module):
             use_dropout (bool)  -- if use dropout layers
             n_blocks (int)      -- the number of ResNet blocks
             padding_type (str)  -- the name of padding layer in conv layers: reflect | replicate | zero
+            output_size (int)   -- the patial output size
         """
         assert(n_blocks >= 0)
         super(ResnetGenerator, self).__init__()
@@ -329,8 +333,11 @@ class ResnetGenerator(nn.Module):
                       norm_layer(int(ngf * mult / 2)),
                       nn.ReLU(True)]
         model += [nn.ReflectionPad2d(3)]
+
         model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
-        model += [nn.Tanh()]
+        model += [nn.Upsample(size=(output_size, output_size), mode='bilinear', align_corners=True)]
+        model += [nn.Conv2d(output_nc, output_nc, kernel_size=1)] # 1x1 conv
+        model += [nn.Sigmoid()]
 
         self.model = nn.Sequential(*model)
 
@@ -476,3 +483,110 @@ class PixelDiscriminator(nn.Module):
     def forward(self, input):
         """Standard forward."""
         return self.net(input)
+
+# Define the deeper and wider model
+class DeeperWiderConvAutoencoder3D(nn.Module):
+    def __init__(self, output_size=64):
+        super(DeeperWiderConvAutoencoder3D, self).__init__()
+        # Encoder
+        self.encoder = nn.Sequential(
+            nn.Conv3d(1, 64, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(64),
+            nn.ReLU(True),
+            nn.Conv3d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(128),
+            nn.ReLU(True),
+            nn.Conv3d(128, 256, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(256),
+            nn.ReLU(True),
+            nn.Conv3d(256, 512, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(512),
+            nn.ReLU(True),
+            nn.Conv3d(512, 1024, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(1024),
+            nn.ReLU(True),
+            nn.Conv3d(1024, 2048, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm3d(2048),
+            nn.ReLU(True),
+            nn.Dropout3d(0.5)
+        )
+        # Decoder
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose3d(2048, 1024, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm3d(1024),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(1024, 512, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm3d(512),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm3d(256),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm3d(128),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm3d(64),
+            nn.ReLU(True),
+            nn.ConvTranspose3d(64, 1, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.Upsample(size=(output_size, output_size, 28), mode='trilinear', align_corners=True),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        x = x.permute(0, 4, 1, 2, 3)
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x
+    
+class DeeperWiderConvAutoencoder2D(nn.Module):
+    def __init__(self, input_nc=10, output_nc=30, output_size=64):
+        super(DeeperWiderConvAutoencoder2D, self).__init__()
+        # Encoder
+        self.encoder = nn.Sequential(
+            nn.Conv2d(input_nc, 64, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+            nn.Conv2d(512, 1024, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(1024),
+            nn.ReLU(True),
+            nn.Conv2d(1024, 2048, kernel_size=3, stride=2, padding=1),
+            nn.BatchNorm2d(2048),
+            nn.ReLU(True),
+            nn.Dropout2d(0.5)
+        )
+        # Decoder
+        self.decoder = nn.Sequential(
+            nn.ConvTranspose2d(2048, 1024, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm2d(1024),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(1024, 512, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(512, 256, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            nn.ConvTranspose2d(64, output_nc, kernel_size=3, stride=2, padding=1, output_padding=1),
+            nn.Upsample(size=(output_size, output_size), mode='bilinear', align_corners=True),
+            nn.Conv2d(output_nc, output_nc, kernel_size=1),
+            nn.Sigmoid()
+        )
+
+    def forward(self, x):
+        x = self.encoder(x)
+        x = self.decoder(x)
+        return x
