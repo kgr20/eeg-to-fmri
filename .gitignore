@@ -20,3 +20,6 @@ venv.bak/
 
 # Pytorch
 *.pth
+
+# Wandb
+/wandb
