@@ -13,7 +13,8 @@ import torchmetrics
 import matplotlib.pyplot as plt
 import time
 import os
-from typing import Tuple
+from pathlib import Path
+from typing import Tuple, List
 from io import BytesIO
 from PIL import Image
 
@@ -25,8 +26,9 @@ import argparse
 # Argument parsing
 parser = argparse.ArgumentParser(description="EEG to fMRI Autoencoder Training Script")
 parser.add_argument('--dataset_name', type=str, default="01", help="Dataset identifier")
-parser.add_argument('--data_path', type=str, default="/data2/quan/Datasets/EEG2fMRI/Kris", help="Path to the dataset directory")
-parser.add_argument('--work_dir', type=str, default="/data2/quan/WorkSpace/eeg2fmri", help="Path to save experiments")
+parser.add_argument('--data_root', type=str, default="/groups/1/gca50041/quan/Datasets/EEG2fMRI/h5_data/NODDI", 
+                    help="Path to the dataset directory in h5 format")
+parser.add_argument('--work_dir', type=str, default="/scratch/1/acb11155on/WorkSpace/eeg2fmri", help="Path to save experiments")
 
 parser.add_argument('--num_epochs', type=int, default=300, help="Number of epochs for training")
 parser.add_argument('--batch_size', type=int, default=64, help="Batch size for training and testing")
@@ -86,18 +88,41 @@ def calculate_psnr(img1, img2):
     psnr = 20 * torch.log10(1.0 / torch.sqrt(mse))
     return psnr.item()
 
+def load_h5_from_list(data_root: str, individual_list: List):
+    eeg_data = None
+    fmri_data = None
+
+    pbar = tqdm(individual_list, leave=True)
+    for individual_name in pbar:
+        pbar.set_description(f'Individual {individual_name}')
+        with h5py.File(Path(data_root)/f'{individual_name}.h5', 'r') as f:
+            eeg_indv = np.array(f['eeg'][:])
+            fmri_indv = np.array(f['fmri'][:])
+
+            eeg_data = eeg_indv if eeg_data is None else np.concatenate([eeg_data, eeg_indv], axis=0)
+            fmri_data = fmri_indv if fmri_data is None else np.concatenate([fmri_data, fmri_indv], axis=0)
+    
+    return eeg_data, fmri_data
+
 """Load the data
 Data is already in zero-mean and unit-std
 """
-data_path = os.path.join(args.data_path, f"{args.dataset_name}_eeg_fmri_data_new.h5")
+# NOTE: config list of train/test
+# # Train/test from David
+# train_list = ['32', '35', '36', '37', '38', '39', '40', '42']
+# test_list = ['43', '44']
 
-print(f'Loading data ...')
+# Train/test Quan-Kris
+test_list = ['43', '44']
+train_list = [Path(indv).stem for indv in os.listdir(args.data_root) if Path(indv).stem not in test_list]
+
+print(sorted(train_list))
+
 # each data has: [N_sample, H, W, C]
-with h5py.File(data_path, 'r') as f:
-    eeg_train = np.array(f['eeg_train'][:])
-    fmri_train = np.array(f['fmri_train'][:])
-    eeg_test = np.array(f['eeg_test'][:])
-    fmri_test = np.array(f['fmri_test'][:])
+print(f'Loading train data ...')
+eeg_train, fmri_train = load_h5_from_list(args.data_root, individual_list=train_list)
+print(f'Loading test data ...')
+eeg_test, fmri_test = load_h5_from_list(args.data_root, individual_list=test_list)
 
 # In PyTorch, 1 data sample is represented as [C, H, W]
 eeg_train = eeg_train.transpose(0, 3, 1, 2)
