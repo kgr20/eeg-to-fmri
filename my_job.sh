@@ -13,4 +13,4 @@ source /home/aca10131kr/anaconda3/etc/profile.d/conda.sh
 conda activate py38
 
 ### Execute your code
-python 20240627_AE.py
+python 20240716_Diffusion.py

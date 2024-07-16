@@ -1,0 +1,17 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+['32', '35', '36', '37', '38', '39', '40', '42', '45', '46', '47', '48', '49', '50']
+Loading train data ...
+  0%|          | 0/14 [00:00<?, ?it/s]Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "train_kris.py", line 123, in <module>
+    eeg_train, fmri_train = load_h5_from_list(args.data_root, individual_list=train_list)
+  File "train_kris.py", line 98, in load_h5_from_list
+    with h5py.File(Path(data_root)/f'{individual_name}.h5', 'r') as f:
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/h5py/_hl/files.py", line 562, in __init__
+    fid = make_fid(name, mode, userblock_size, fapl, fcpl, swmr=swmr)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/h5py/_hl/files.py", line 235, in make_fid
+    fid = h5f.open(name, flags, fapl=fapl)
+  File "h5py/_objects.pyx", line 54, in h5py._objects.with_phil.wrapper
+  File "h5py/_objects.pyx", line 55, in h5py._objects.with_phil.wrapper
+  File "h5py/h5f.pyx", line 102, in h5py.h5f.open
+PermissionError: [Errno 13] Unable to synchronously open file (unable to open file: name = '/groups/1/gca50041/quan/Datasets/EEG2fMRI/h5_data/NODDI/48.h5', errno = 13, error message = 'Permission denied', flags = 0, o_flags = 0)

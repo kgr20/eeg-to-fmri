@@ -31,9 +31,9 @@ eeg_test = (eeg_test - np.min(eeg_test)) / (np.max(eeg_test) - np.min(eeg_test))
 fmri_test = (fmri_test - np.min(fmri_test)) / (np.max(fmri_test) - np.min(fmri_test))
 
 # Select a small subset of the data (e.g., 100 samples)
-subset_size = 200
-eeg_subset = eeg_train[:subset_size]
-fmri_subset = fmri_train[:subset_size]
+# subset_size = 200
+eeg_subset = eeg_train[:]
+fmri_subset = fmri_train[:]
 
 # Create a dataset class
 class EEGfMRIDataset(Dataset):
@@ -123,7 +123,7 @@ scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0
 clip_value = 1.0
 
 # Training loop with timing
-num_epochs = 1000  # Reduce the number of epochs
+num_epochs = 200  # Reduce the number of epochs
 total_training_time = 0.0
 
 for epoch in range(num_epochs):

@@ -1,0 +1,8 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+wandb: W&B API key is configured. Use `wandb login --relogin` to force relogin
+wandb: Appending key for api.wandb.ai to your netrc file: /home/aca10131kr/.netrc
+Loading data ...
+Traceback (most recent call last):
+  File "20240716_Diffusion.py", line 117, in <module>
+    eeg_train = eeg_train.transpose(0, 3, 1, 2)
+ValueError: axes don't match array

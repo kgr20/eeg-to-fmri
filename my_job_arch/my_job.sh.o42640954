@@ -1,0 +1,5 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+Traceback (most recent call last):
+  File "train_kris.py", line 21, in <module>
+    import wandb
+ModuleNotFoundError: No module named 'wandb'

@@ -1,0 +1,5 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+Traceback (most recent call last):
+  File "20240716_Diffusion.py", line 19, in <module>
+    from torchvision import transforms
+ModuleNotFoundError: No module named 'torchvision'
