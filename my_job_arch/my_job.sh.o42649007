@@ -1,0 +1,7 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+Traceback (most recent call last):
+  File "train_kris.py", line 116, in <module>
+    train_list = [Path(indv).stem for indv in os.listdir(args.data_root) if Path(indv).stem not in test_list]
+  File "train_kris.py", line 116, in <listcomp>
+    train_list = [Path(indv).stem for indv in os.listdir(args.data_root) if Path(indv).stem not in test_list]
+NameError: name 'Path' is not defined

@@ -1,0 +1,5 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+Traceback (most recent call last):
+  File "train_kris.py", line 22, in <module>
+    parser = argparse.ArgumentParser(description="EEG to fMRI Diffusion Model Training Script")
+NameError: name 'argparse' is not defined

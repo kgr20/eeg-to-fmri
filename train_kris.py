@@ -3,12 +3,19 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-
-from torch.utils.data import DataLoader
-from models.networks import define_G, DeeperWiderConvAutoencoder2D
-from data.datasets import EEGfMRIDataset
-from models.losses import SSIMLoss
+from torch.utils.data import DataLoader, Dataset
+import matplotlib.pyplot as plt
+import os
+from pathlib import Path
+from typing import Tuple, List
+from io import BytesIO
+from PIL import Image
+import wandb
+from tqdm import tqdm
+from datetime import datetime
+from diffusers import DDPMScheduler
 import torchmetrics
+import argparse
 
 import matplotlib.pyplot as plt
 import time
@@ -24,13 +31,12 @@ from datetime import datetime
 import argparse
 
 # Argument parsing
-parser = argparse.ArgumentParser(description="EEG to fMRI Autoencoder Training Script")
+parser = argparse.ArgumentParser(description="EEG to fMRI Diffusion Model Training Script")
 parser.add_argument('--dataset_name', type=str, default="01", help="Dataset identifier")
-parser.add_argument('--data_root', type=str, default="/groups/1/gca50041/quan/Datasets/EEG2fMRI/h5_data/NODDI", 
+parser.add_argument('--data_root', type=str, default="/home/aca10131kr/gca50041/quan/Datasets/EEG2fMRI/h5_data/NODDI", 
                     help="Path to the dataset directory in h5 format")
-parser.add_argument('--work_dir', type=str, default="/scratch/1/acb11155on/WorkSpace/eeg2fmri", help="Path to save experiments")
-
-parser.add_argument('--num_epochs', type=int, default=10, help="Number of epochs for training")
+parser.add_argument('--work_dir', type=str, default="/home/aca10131kr/scratch_eeg-to-fmri", help="Path to save experiments")
+parser.add_argument('--num_epochs', type=int, default=300, help="Number of epochs for training")
 parser.add_argument('--batch_size', type=int, default=64, help="Batch size for training and testing")
 parser.add_argument('--lr', type=float, default=1e-3, help="Learning rate for optimizer")
 parser.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay for optimizer")
@@ -40,8 +46,30 @@ args = parser.parse_args()
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# # W&B
-# wandb.login()
+# Simplified model without residual connections
+class SimpleUNetModel(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(SimpleUNetModel, self).__init__()
+        self.conv1 = nn.Conv2d(in_channels, 64, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
+        self.conv4 = nn.Conv2d(256, out_channels, kernel_size=3, stride=1, padding=1)
+        self.relu = nn.ReLU()
+
+    def forward(self, x):
+        x = self.relu(self.conv1(x))
+        x = self.relu(self.conv2(x))
+        x = self.relu(self.conv3(x))
+        x = self.conv4(x)
+        return x
+
+model = SimpleUNetModel(in_channels=10, out_channels=30).to(device)
+
+# Define the optimizer
+optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
+
+# Define the loss function
+criterion = nn.MSELoss().to(device)
 
 def plot_comparison(labels, outputs, slice_idx=16):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
@@ -58,11 +86,10 @@ def plot_comparison(labels, outputs, slice_idx=16):
 
     axes[2].imshow(diff_slice, cmap='gray')
     axes[2].set_title('Difference')
-    
+
     buff = BytesIO()
     plt.savefig(buff, format='png')
     buff.seek(0)
-    # Convert the BytesIO object to an Image object
     image = Image.open(buff)
 
     plt.close()
@@ -72,12 +99,10 @@ def plot_comparison(labels, outputs, slice_idx=16):
 # Normalize data
 def normalize_data(data: np.ndarray, scale_range: Tuple=None):
     """Normalize data to range [a, b]"""
-    # scale to range [0, 1] first
     new_data = (data - data.min())/(data.max() - data.min())
-    # scale to range [a, b]
     if scale_range is not None:
         a, b = scale_range
-        assert a<=b, f'Invalid range: {scale_range}'
+        assert a <= b, f'Invalid range: {scale_range}'
         new_data = (b-a)*new_data + a
 
     return new_data
@@ -104,25 +129,14 @@ def load_h5_from_list(data_root: str, individual_list: List):
     
     return eeg_data, fmri_data
 
-"""Load the data
-Data is already in zero-mean and unit-std
-"""
-# NOTE: config list of train/test
-# # Train/test from David
-# train_list = ['32', '35', '36', '37', '38', '39', '40', '42']
-# test_list = ['43', '44']
-
-# Train/test Quan-Kris
+# Load the data
+train_list = ['32', '35', '36', '37', '38', '39', '40', '42']
 test_list = ['43', '44']
-train_list = [Path(indv).stem for indv in os.listdir(args.data_root) if Path(indv).stem not in test_list]
 
-print(sorted(train_list))
-
-# each data has: [N_sample, H, W, C]
 print(f'Loading train data ...')
-eeg_train, fmri_train = load_h5_from_list(args.data_root, individual_list=train_list)
+eeg_train, fmri_train = load_h5_from_list(args.data_root, train_list)
 print(f'Loading test data ...')
-eeg_test, fmri_test = load_h5_from_list(args.data_root, individual_list=test_list)
+eeg_test, fmri_test = load_h5_from_list(args.data_root, test_list)
 
 # In PyTorch, 1 data sample is represented as [C, H, W]
 eeg_train = eeg_train.transpose(0, 3, 1, 2)
@@ -132,7 +146,6 @@ eeg_test = eeg_test.transpose(0, 3, 1, 2)
 fmri_test = fmri_test.transpose(0, 3, 1, 2)
 
 # Normalize the data to range [a, b]
-# NOTE: this is optional, we ONLY can choose either zero-mean unit-std scale OR [a, b] scale
 eeg_train = normalize_data(eeg_train, scale_range=(0, 1))
 fmri_train = normalize_data(fmri_train, scale_range=(0, 1))
 
@@ -143,6 +156,19 @@ print("EEG Train Shape:", eeg_train.shape)
 print("fMRI Train Shape:", fmri_train.shape)
 print("EEG Test Shape:", eeg_test.shape)
 print("fMRI Test Shape:", fmri_test.shape)
+
+class EEGfMRIDataset(Dataset):
+    def __init__(self, eeg_data, fmri_data):
+        self.eeg_data = eeg_data
+        self.fmri_data = fmri_data
+
+    def __len__(self):
+        return len(self.eeg_data)
+
+    def __getitem__(self, idx):
+        eeg = self.eeg_data[idx]
+        fmri = self.fmri_data[idx]
+        return eeg, fmri
 
 train_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_train, dtype=torch.float32), 
                                fmri_data=torch.tensor(fmri_train, dtype=torch.float32))
@@ -161,19 +187,8 @@ os.makedirs(exp_dir, exist_ok=True)
 
 run = wandb.init(project="eeg_fmri_project", name=exp_name)
 
-# Initialize the model, eeg: [H, W, 10], fmri: [H, W, 30]
-# model = define_G(input_nc=10, output_nc=30, ngf=64, netG='resnet_3blocks', output_size=64).to(device)
-model = DeeperWiderConvAutoencoder2D(input_nc=10, output_nc=30, output_size=64).to(device)
-
-# # Kris's original code
-# model = DeeperWiderConvAutoencoder3D().to(device)
-
-# Define the loss function
-criterion = SSIMLoss().to(device)
-
-# Optimizer and scheduler
-optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
+# Initialize the scheduler
+scheduler = DDPMScheduler(num_train_timesteps=1000)
 
 # Training loop with timing and SSIM tracking
 total_training_time = 0.0
@@ -194,10 +209,12 @@ for epoch in pbar:
     for inputs, labels in train_loader:
         inputs = inputs.to(device)
         labels = labels.to(device)
-        # labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
 
         optimizer.zero_grad()
-        outputs = model(inputs)
+        timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
+        noise = torch.randn_like(inputs).to(device)
+        noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)
+        outputs = model(noisy_inputs)
 
         loss = criterion(outputs, labels)
         loss.backward()
@@ -223,9 +240,10 @@ for epoch in pbar:
         for inputs, labels in test_loader:
             inputs = inputs.to(device)
             labels = labels.to(device)
-            # labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
-
-            outputs = model(inputs)
+            timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
+            noise = torch.randn_like(inputs).to(device)
+            noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)
+            outputs = model(noisy_inputs)
             ssim_score += calculate_ssim(outputs, labels).item()
             psnr_score += calculate_psnr(outputs, labels)
 
@@ -248,11 +266,16 @@ for epoch in pbar:
     if ssim_score > best_ssim:
         best_ssim = ssim_score
         best_psnr = psnr_score
-        # remove the latest model
         if best_save_path is not None:
             os.remove(best_save_path)
-        # Save the best model weights with SSIM and PSNR scores in the filename
         best_save_path = os.path.join(exp_dir, f"epoch{epoch}_ssim_{best_ssim:.4f}_psnr_{best_psnr:.2f}.pth")
         torch.save(model.state_dict(), best_save_path)
-    
+
     pbar.set_description(f'SSIM: {ssim_score:.3f} / PSNR: {psnr_score:.3f} / Loss: {epoch_loss:.3f} / Best SSIM: {best_ssim:.3f}')
+
+# Save final model
+final_model_path = os.path.join(exp_dir, 'final_model.pth')
+torch.save(model.state_dict(), final_model_path)
+
+# End W&B run
+wandb.finish()
