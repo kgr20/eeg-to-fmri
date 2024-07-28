@@ -336,7 +336,7 @@ class ResnetGenerator(nn.Module):
 
         model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
         model += [nn.Upsample(size=(output_size, output_size), mode='bilinear', align_corners=True)]
-        model += [nn.Conv2d(output_nc, output_nc, kernel_size=3, padding=1)] # 3x3 conv
+        model += [nn.Conv2d(output_nc, output_nc, kernel_size=1)] # 1x1 conv
         model += [nn.Sigmoid()]
 
         self.model = nn.Sequential(*model)
