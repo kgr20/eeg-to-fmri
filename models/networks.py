@@ -121,7 +121,7 @@ def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False,
     elif netG == 'resnet_6blocks':
         net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=6)
     elif netG == 'resnet_3blocks':
-        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=1)
+        net = ResnetGenerator(input_nc, output_nc, ngf, norm_layer=norm_layer, use_dropout=use_dropout, n_blocks=3)
     else:
         raise NotImplementedError('Generator model name [%s] is not recognized' % netG)
     return init_net(net, init_type, init_gain, gpu_ids)
@@ -336,7 +336,7 @@ class ResnetGenerator(nn.Module):
 
         model += [nn.Conv2d(ngf, output_nc, kernel_size=7, padding=0)]
         model += [nn.Upsample(size=(output_size, output_size), mode='bilinear', align_corners=True)]
-        model += [nn.Conv2d(output_nc, output_nc, kernel_size=1)] # 1x1 conv
+        model += [nn.Conv2d(output_nc, output_nc, kernel_size=3, padding=1)] # 3x3 conv
         model += [nn.Sigmoid()]
 
         self.model = nn.Sequential(*model)
