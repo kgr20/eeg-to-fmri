@@ -65,9 +65,9 @@ def load_h5_from_list(data_root: str, individual_list: list):
     
     return eeg_data, fmri_data
 
-# Normalize the data to range [0, 1]
+# Normalize the data to range [-1, 1]
 def normalize_data(data: np.ndarray, scale_range: tuple = None):
-    new_data = (data - data.min()) / (data.max() - data.min())
+    new_data = 2 * (data - data.min()) / (data.max() - data.min()) - 1
     if scale_range is not None:
         a, b = scale_range
         assert a <= b, f'Invalid range: {scale_range}'
@@ -78,9 +78,9 @@ def normalize_data(data: np.ndarray, scale_range: tuple = None):
 class Encoder(nn.Module):
     def __init__(self):
         super(Encoder, self).__init__()
-        self.conv1 = nn.Conv2d(64, 128, kernel_size=3, stride=2, padding=1)
+        self.conv1 = nn.Conv2d(10, 128, kernel_size=3, stride=2, padding=1)
         self.conv2 = nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1)
-        self.fc = nn.Linear(256 * 68 * 3, 1024)
+        self.fc = nn.Linear(256 * 16 * 68, 1024)
 
     def forward(self, x):
         x = torch.relu(self.conv1(x))
@@ -102,36 +102,45 @@ class DiffusionProcess(nn.Module):
 class Decoder(nn.Module):
     def __init__(self):
         super(Decoder, self).__init__()
-        self.fc = nn.Linear(1024, 256 * 8 * 8)
-        self.deconv1 = nn.ConvTranspose2d(256, 128, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.deconv2 = nn.ConvTranspose2d(128, 64, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.deconv3 = nn.ConvTranspose2d(64, 32, kernel_size=3, stride=2, padding=1, output_padding=1)
-        self.deconv4 = nn.ConvTranspose2d(32, 30, kernel_size=3, stride=1, padding=1)
+        self.fc = nn.Linear(1024, 256 * 4 * 4)
+        self.deconv1 = nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1)
+        self.deconv2 = nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1)
+        self.deconv3 = nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1)
+        self.deconv4 = nn.ConvTranspose2d(32, 30, kernel_size=4, stride=2, padding=1)
         self.final_conv = nn.Conv2d(30, 64, kernel_size=1, stride=1, padding=0)
 
     def forward(self, x):
         x = torch.relu(self.fc(x))
-        x = x.view(x.size(0), 256, 8, 8)
+        x = x.view(x.size(0), 256, 4, 4)
         x = torch.relu(self.deconv1(x))
         x = torch.relu(self.deconv2(x))
         x = torch.relu(self.deconv3(x))
         x = torch.sigmoid(self.deconv4(x))
-        x = x.permute(0, 2, 3, 1)
         return x
 
 encoder = Encoder().to(device)
 diffusion_process = DiffusionProcess(latent_dim=1024).to(device)
 decoder = Decoder().to(device)
 
-# Define loss function and optimizer
-criterion = nn.SSIMLoss()
+# Define SSIM loss function
+class SSIMLoss(nn.Module):
+    def __init__(self):
+        super(SSIMLoss, self).__init__()
+        self.ssim = torchmetrics.image.StructuralSimilarityIndexMeasure(data_range=1.0)  # Adjusted for [-1, 1] range
+
+    def forward(self, img1, img2):
+        return 1 - self.ssim(img1, img2)
+
+criterion = SSIMLoss().to(device)
+
+# Define optimizer
 optimizer = optim.Adam(list(encoder.parameters()) + list(diffusion_process.parameters()) + list(decoder.parameters()), lr=args.lr, weight_decay=args.weight_decay)
 
 # Functions to calculate SSIM and PSNR
 ssim_metric = torchmetrics.StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
 def calculate_psnr(img1, img2):
     mse = F.mse_loss(img1, img2)
-    psnr = 20 * torch.log10(1.0 / torch.sqrt(mse))
+    psnr = 20 * torch.log10(1.0 / torch.sqrt(mse))  # Adjusted for [-1, 1] range
     return psnr.item()
 
 def plot_comparison(labels, outputs, slice_idx=16):
@@ -159,9 +168,7 @@ def plot_comparison(labels, outputs, slice_idx=16):
     return image
 
 # Training function
-# Training function
-def train(model, train_loader, criterion, optimizer, device):
-    encoder, diffusion_process, decoder = model
+def train(encoder, diffusion_process, decoder, train_loader, criterion, optimizer, device):
     encoder.train()
     diffusion_process.train()
     decoder.train()
@@ -201,7 +208,7 @@ def train(model, train_loader, criterion, optimizer, device):
                 latent = encoder(inputs)
                 noisy_latent = diffusion_process(latent, noise_level=0.1)
                 outputs = decoder(noisy_latent)
-                ssim_score += criterion.ssim(outputs, labels).item()
+                ssim_score += ssim_metric(outputs, labels).item()
                 psnr_score += calculate_psnr(outputs, labels)
 
         ssim_score /= len(test_loader)
@@ -225,8 +232,7 @@ def train(model, train_loader, criterion, optimizer, device):
         print(f'SSIM: {ssim_score:.4f}, PSNR: {psnr_score:.4f}')
 
 # Evaluation function
-def evaluate(model, test_loader, criterion, device):
-    encoder, diffusion_process, decoder = model
+def evaluate(encoder, diffusion_process, decoder, test_loader, criterion, device):
     encoder.eval()
     diffusion_process.eval()
     decoder.eval()
@@ -260,7 +266,19 @@ print(f"fMRI Train Shape: {fmri_train.shape}")
 print(f"EEG Test Shape: {eeg_test.shape}")
 print(f"fMRI Test Shape: {fmri_test.shape}")
 
-# Normalize the data to range [0, 1]
+# Transpose the data to match PyTorch's [batch_size, channels, height, width] format
+eeg_train = np.transpose(eeg_train, (0, 3, 1, 2))  # [batch_size, 10, 64, 269]
+fmri_train = np.transpose(fmri_train, (0, 3, 1, 2))  # [batch_size, 30, 64, 64]
+eeg_test = np.transpose(eeg_test, (0, 3, 1, 2))  # [batch_size, 10, 64, 269]
+fmri_test = np.transpose(fmri_test, (0, 3, 1, 2))  # [batch_size, 30, 64, 64]
+
+print("Shapes after transposition")
+print(f"EEG Train Shape: {eeg_train.shape}")
+print(f"fMRI Train Shape: {fmri_train.shape}")
+print(f"EEG Test Shape: {eeg_test.shape}")
+print(f"fMRI Test Shape: {fmri_test.shape}")
+
+# Normalize the data to range [-1, 1]
 eeg_train = normalize_data(eeg_train, scale_range=(0, 1))
 fmri_train = normalize_data(fmri_train, scale_range=(0, 1))
 eeg_test = normalize_data(eeg_test, scale_range=(0, 1))
@@ -282,11 +300,10 @@ os.makedirs(exp_dir, exist_ok=True)
 run = wandb.init(project="eeg_fmri_project", name=exp_name)
 
 # Train the model
-model = (encoder, diffusion_process, decoder)
-train(model, train_loader, criterion, optimizer, device)
+train(encoder, diffusion_process, decoder, train_loader, criterion, optimizer, device)
 
 # Evaluate the model
-evaluate(model, test_loader, criterion, device)
+evaluate(encoder, diffusion_process, decoder, test_loader, criterion, device)
 
 # End W&B run
 wandb.finish()
