@@ -1,7 +1,0 @@
-module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
-Traceback (most recent call last):
-  File "train_kris.py", line 10, in <module>
-    from models.losses import SSIMLoss
-  File "/home/aca10131kr/eeg-to-fmri/models/losses.py", line 2, in <module>
-    import torchmetrics
-ModuleNotFoundError: No module named 'torchmetrics'

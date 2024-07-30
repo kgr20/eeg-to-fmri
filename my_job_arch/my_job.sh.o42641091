@@ -1,5 +1,0 @@
-module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
-Traceback (most recent call last):
-  File "20240716_Diffusion.py", line 18, in <module>
-    from diffusers import DDPMScheduler, UNet2DModel
-ModuleNotFoundError: No module named 'diffusers'

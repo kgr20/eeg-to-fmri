@@ -1,5 +1,0 @@
-module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
-  File "20240627_AE.py", line 159
-    print(f'Epoch [{epoch+1}/{num_epochs}], Loss: {running_loss/len(subset_loader):.4f}, Time: {epoch_duration:.2f} sec, Total Time: {total_training_time/60:.2f} min")
-                                                                                                                                                                      ^
-SyntaxError: EOL while scanning string literal

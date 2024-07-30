@@ -1,40 +1,0 @@
-module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
-['32', '35', '36', '37', '38', '39', '40', '42', '45', '46', '47', '48', '49', '50']
-Loading train data ...
-  0%|          | 0/14 [00:00<?, ?it/s]Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]Individual 48:   7%|▋         | 1/14 [00:01<00:14,  1.13s/it]Individual 37:   7%|▋         | 1/14 [00:01<00:14,  1.13s/it]Individual 37:  14%|█▍        | 2/14 [00:02<00:15,  1.31s/it]Individual 42:  14%|█▍        | 2/14 [00:02<00:15,  1.31s/it]Individual 42:  21%|██▏       | 3/14 [00:04<00:16,  1.48s/it]Individual 45:  21%|██▏       | 3/14 [00:04<00:16,  1.48s/it]Individual 45:  29%|██▊       | 4/14 [00:06<00:17,  1.75s/it]Individual 35:  29%|██▊       | 4/14 [00:06<00:17,  1.75s/it]Individual 35:  36%|███▌      | 5/14 [00:08<00:17,  1.90s/it]Individual 40:  36%|███▌      | 5/14 [00:08<00:17,  1.90s/it]Individual 40:  43%|████▎     | 6/14 [00:11<00:16,  2.09s/it]Individual 39:  43%|████▎     | 6/14 [00:11<00:16,  2.09s/it]Individual 39:  50%|█████     | 7/14 [00:13<00:16,  2.36s/it]Individual 32:  50%|█████     | 7/14 [00:13<00:16,  2.36s/it]Individual 32:  57%|█████▋    | 8/14 [00:17<00:15,  2.65s/it]Individual 50:  57%|█████▋    | 8/14 [00:17<00:15,  2.65s/it]Individual 50:  64%|██████▍   | 9/14 [00:20<00:14,  2.90s/it]Individual 46:  64%|██████▍   | 9/14 [00:20<00:14,  2.90s/it]Individual 46:  71%|███████▏  | 10/14 [00:24<00:12,  3.09s/it]Individual 38:  71%|███████▏  | 10/14 [00:24<00:12,  3.09s/it]Individual 38:  79%|███████▊  | 11/14 [00:27<00:09,  3.31s/it]Individual 49:  79%|███████▊  | 11/14 [00:27<00:09,  3.31s/it]Individual 49:  86%|████████▌ | 12/14 [00:31<00:07,  3.52s/it]Individual 36:  86%|████████▌ | 12/14 [00:31<00:07,  3.52s/it]Individual 36:  93%|█████████▎| 13/14 [00:36<00:03,  3.73s/it]Individual 47:  93%|█████████▎| 13/14 [00:36<00:03,  3.73s/it]Individual 47: 100%|██████████| 14/14 [00:40<00:00,  4.00s/it]Individual 47: 100%|██████████| 14/14 [00:40<00:00,  2.92s/it]
-Loading test data ...
-  0%|          | 0/2 [00:00<?, ?it/s]Individual 43:   0%|          | 0/2 [00:00<?, ?it/s]Individual 43:  50%|█████     | 1/2 [00:01<00:01,  1.18s/it]Individual 44:  50%|█████     | 1/2 [00:01<00:01,  1.18s/it]Individual 44: 100%|██████████| 2/2 [00:02<00:00,  1.37s/it]Individual 44: 100%|██████████| 2/2 [00:02<00:00,  1.34s/it]
-wandb: Currently logged in as: kris-g-roos (kris-g-roos-National University of Singapore). Use `wandb login --relogin` to force relogin
-wandb: Tracking run with wandb version 0.17.4
-wandb: Run data is saved locally in /home/aca10131kr/eeg-to-fmri/wandb/run-20240717_150227-pvfqnwes
-wandb: Run `wandb offline` to turn off syncing.
-wandb: Syncing run dataset_01_run_20240717-150225
-wandb: ⭐️ View project at https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project
-wandb: 🚀 View run at https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project/runs/pvfqnwes
-EEG Train Shape: (4018, 10, 64, 269)
-fMRI Train Shape: (4018, 30, 64, 64)
-EEG Test Shape: (574, 10, 64, 269)
-fMRI Test Shape: (574, 30, 64, 64)
-wandb: - 0.009 MB of 0.009 MB uploadedwandb: \ 0.009 MB of 0.009 MB uploadedwandb: | 0.009 MB of 0.016 MB uploadedwandb: / 0.020 MB of 0.020 MB uploadedwandb: 🚀 View run dataset_01_run_20240717-150225 at: https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project/runs/pvfqnwes
-wandb: ⭐️ View project at: https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project
-wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
-wandb: Find logs at: ./wandb/run-20240717_150227-pvfqnwes/logs
-wandb: WARNING The new W&B backend becomes opt-out in version 0.18.0; try it out with `wandb.require("core")`! See https://wandb.me/wandb-core for more information.
-Traceback (most recent call last):
-  File "train_kris.py", line 171, in <module>
-    output = model(noisy_image)
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "train_kris.py", line 153, in forward
-    x = self.relu(self.conv1(x))
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
-    return forward_call(*args, **kwargs)
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 460, in forward
-    return self._conv_forward(input, self.weight, self.bias)
-  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/conv.py", line 456, in _conv_forward
-    return F.conv2d(input, weight, bias, self.stride,
-RuntimeError: Given groups=1, weight of size [64, 64, 3, 3], expected input[1, 10, 64, 269] to have 64 channels, but got 10 channels instead
