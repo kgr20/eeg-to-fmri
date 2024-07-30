@@ -34,57 +34,61 @@ args = parser.parse_args()
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-ssim_metric = StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
-
-# Define the UNet model for latent diffusion
-class LatentUNet(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(LatentUNet, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv3d(in_channels, 64, kernel_size=3, padding=1),  # [B, 64, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(64, 128, kernel_size=3, padding=1),          # [B, 128, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.MaxPool3d(kernel_size=2, stride=2)                  # [B, 128, D//2, H//2, W//2]
-        )
-        self.middle = nn.Sequential(
-            nn.Conv3d(128, 256, kernel_size=3, padding=1),         # [B, 256, D//2, H//2, W//2]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(256, 512, kernel_size=3, padding=1),         # [B, 512, D//2, H//2, W//2]
-            nn.ReLU(inplace=True)
-        )
-        self.decoder = nn.Sequential(
-            nn.ConvTranspose3d(512, 256, kernel_size=2, stride=2), # [B, 256, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(256, 128, kernel_size=3, padding=1),         # [B, 128, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(128, out_channels, kernel_size=3, padding=1) # [B, out_channels, D, H, W]
-        )
-
-    def forward(self, x):
-        print(f"Input shape: {x.shape}")
-        x1 = self.encoder(x)
-        print(f"Encoded shape: {x1.shape}")
-        x2 = self.middle(x1)
-        print(f"Middle shape: {x2.shape}")
-        x3 = self.decoder(x2)
-        print(f"Decoded shape: {x3.shape}")
-        return x3
 
 # Define the model
-model = LatentUNet(in_channels=64, out_channels=30).to(device)  # Adjusted in_channels to 64 for EEG latent space
+class SimpleConvModel(nn.Module):
+    def __init__(self):
+        super(SimpleConvModel, self).__init__()
+        self.conv1 = nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1)
+        self.conv2 = nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1)
+        self.conv3 = nn.Conv2d(256, 128, kernel_size=3, stride=1, padding=1)
+        self.conv4 = nn.Conv2d(128, 64, kernel_size=3, stride=1, padding=1)
+        self.conv5 = nn.Conv2d(64, 30, kernel_size=3, stride=1, padding=1)
+        
+    def forward(self, x):
+        print(f"Input shape: {x.shape}")
+        x = self.conv1(x)
+        x = nn.ReLU(inplace=True)(x)
+        print(f"After conv1 shape: {x.shape}")
+        x = self.conv2(x)
+        x = nn.ReLU(inplace=True)(x)
+        print(f"After conv2 shape: {x.shape}")
+        x = self.conv3(x)
+        x = nn.ReLU(inplace=True)(x)
+        print(f"After conv3 shape: {x.shape}")
+        x = self.conv4(x)
+        x = nn.ReLU(inplace=True)(x)
+        print(f"After conv4 shape: {x.shape}")
+        x = self.conv5(x)
+        x = nn.ReLU(inplace=True)(x)
+        print(f"After conv5 shape: {x.shape}")
+        return x
+
+model = SimpleConvModel().to(device)
 
 # Define the optimizer
 optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-# Define the loss function
-criterion = nn.MSELoss().to(device)
+# Define the combined loss function
+class CombinedLoss(nn.Module):
+    def __init__(self, alpha=0.5):
+        super(CombinedLoss, self).__init__()
+        self.alpha = alpha
+        self.mse_loss = nn.MSELoss()
+        self.ssim_metric = StructuralSimilarityIndexMeasure(data_range=1.0)
+        
+    def forward(self, outputs, labels):
+        mse_loss = self.mse_loss(outputs, labels)
+        ssim_loss = 1 - self.ssim_metric(outputs, labels)
+        return self.alpha * mse_loss + (1 - self.alpha) * ssim_loss
+
+criterion = CombinedLoss().to(device)
 
 def plot_comparison(labels, outputs, slice_idx=16):
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
 
-    label_slice = labels[0, slice_idx, :, :]
-    output_slice = outputs[0, slice_idx, :, :]
+    label_slice = labels[0, :, :, slice_idx]
+    output_slice = outputs[0, :, :, slice_idx]
     diff_slice = np.abs(label_slice - output_slice)
 
     axes[0].imshow(label_slice, cmap='gray')
@@ -122,20 +126,24 @@ def calculate_psnr(img1, img2):
     return psnr.item()
 
 # Load h5 data function
-def load_h5_from_list(data_root: str, individual_list: List):
-    eeg_data = None
-    fmri_data = None
+def load_h5_from_list(data_root: str, individual_list: List[str]):
+    eeg_data = []
+    fmri_data = []
 
     pbar = tqdm(individual_list, leave=True)
     for individual_name in pbar:
         pbar.set_description(f'Individual {individual_name}')
-        with h5py.File(Path(data_root)/f'{individual_name}.h5', 'r') as f:
+        file_path = Path(data_root) / f'{individual_name}.h5'
+        with h5py.File(file_path, 'r') as f:
             eeg_indv = np.array(f['eeg'][:])
             fmri_indv = np.array(f['fmri'][:])
 
-            eeg_data = eeg_indv if eeg_data is None else np.concatenate([eeg_data, eeg_indv], axis=0)
-            fmri_data = fmri_indv if fmri_data is None else np.concatenate([fmri_data, fmri_indv], axis=0)
+            eeg_data.append(eeg_indv)
+            fmri_data.append(fmri_indv)
     
+    eeg_data = np.concatenate(eeg_data, axis=0)
+    fmri_data = np.concatenate(fmri_data, axis=0)
+
     return eeg_data, fmri_data
 
 # Load the data
@@ -152,18 +160,6 @@ print(f"EEG Train Shape: {eeg_train.shape}")   # (287, 64, 269, 10)
 print(f"fMRI Train Shape: {fmri_train.shape}") # (287, 64, 64, 30)
 print(f"EEG Test Shape: {eeg_test.shape}")     # (287, 64, 269, 10)
 print(f"fMRI Test Shape: {fmri_test.shape}")   # (287, 64, 64, 30)
-
-# Transpose to match PyTorch's [B, C, D, H, W] format
-eeg_train = eeg_train.transpose(0, 1, 3, 2)  # (287, 64, 10, 269)
-fmri_train = fmri_train.transpose(0, 3, 1, 2)  # (287, 30, 64, 64)
-eeg_test = eeg_test.transpose(0, 1, 3, 2)  # (287, 64, 10, 269)
-fmri_test = fmri_test.transpose(0, 3, 1, 2)  # (287, 30, 64, 64)
-
-print("Shapes after transposition")
-print(f"EEG Train Shape: {eeg_train.shape}")   # (287, 64, 10, 269)
-print(f"fMRI Train Shape: {fmri_train.shape}") # (287, 30, 64, 64)
-print(f"EEG Test Shape: {eeg_test.shape}")     # (287, 64, 10, 269)
-print(f"fMRI Test Shape: {fmri_test.shape}")
 
 # Normalize the data to range [0, 1]
 eeg_train = normalize_data(eeg_train, scale_range=(0, 1))
@@ -185,19 +181,14 @@ class EEGfMRIDataset(Dataset):
         fmri = self.fmri_data[idx]
         return eeg, fmri
 
-# Update the train and test datasets with the transposed data
+# Create DataLoader objects
 train_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_train, dtype=torch.float32),
                                fmri_data=torch.tensor(fmri_train, dtype=torch.float32))
 test_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_test, dtype=torch.float32),
                               fmri_data=torch.tensor(fmri_test, dtype=torch.float32))
 
-# Re-create DataLoader objects
 train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
-
-# Sample and check shapes again
-sample_image = torch.tensor(eeg_train[0:1], dtype=torch.float32).to(device)
-print("Input shape after transposing:", sample_image.shape)  # (1, 64, 10, 269)
 
 # Initialize a new W&B run with the current timestamp
 timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -220,7 +211,7 @@ best_save_path = None
 
 pbar = tqdm(range(args.num_epochs), leave=True)
 
-calculate_ssim = torchmetrics.image.StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
+calculate_ssim = StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
 
 for epoch in pbar:
     epoch_start_time = time.time()
@@ -228,32 +219,32 @@ for epoch in pbar:
     model.train()
     running_loss = 0.0
     for inputs, labels in train_loader:
-        inputs = inputs.to(device)  # (batch_size, 64, 10, 269)
-        labels = labels.to(device)  # (batch_size, 30, 64, 64)
+        print(f"Batch inputs shape: {inputs.shape}")
+        print(f"Batch labels shape: {labels.shape}")
+        inputs = inputs.to(device)  # (batch_size, 64, 269, 10)
+        labels = labels.to(device)  # (batch_size, 64, 64, 30)
 
         optimizer.zero_grad()
         timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
-        noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 10, 269)
-        noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 10, 269)
+        noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 269, 10)
+        noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 269, 10)
         outputs = model(noisy_inputs)  # (batch_size, 30, 64, 64)
+
+        print(f"Noisy inputs shape: {noisy_inputs.shape}")
+        print(f"Model outputs shape: {outputs.shape}")
 
         # Ensure shapes match before SSIM calculation
         if outputs.shape != labels.shape:
             print(f"Shape mismatch - outputs: {outputs.shape}, labels: {labels.shape}")
             outputs = outputs[:, :, :labels.shape[2], :labels.shape[3]]  # Align shapes
 
-        # Calculate SSIM loss
-        ssim_loss = 1 - ssim_metric(outputs, labels)  # Use outputs directly
-        loss = ssim_loss
+        # Calculate combined loss
+        loss = criterion(outputs, labels)
         loss.backward()
-
         optimizer.step()
         running_loss += loss.item()
 
     epoch_loss = running_loss / len(train_loader)
-
-    # track the latest lr
-    last_lr = optimizer.param_groups[0]["lr"]
 
     epoch_end_time = time.time()
     epoch_duration = epoch_end_time - epoch_start_time
@@ -265,31 +256,31 @@ for epoch in pbar:
     psnr_score = 0.0
     with torch.no_grad():
         for inputs, labels in test_loader:
-            inputs = inputs.to(device)  # (batch_size, 64, 10, 269)
-            labels = labels.to(device)  # (batch_size, 30, 64, 64)
+            print(f"Batch inputs shape (eval): {inputs.shape}")
+            print(f"Batch labels shape (eval): {labels.shape}")
+            inputs = inputs.to(device)  # (batch_size, 64, 269, 10)
+            labels = labels.to(device)  # (batch_size, 64, 64, 30)
             timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
-            noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 10, 269)
-            noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 10, 269)
+            noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 269, 10)
+            noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 269, 10)
             outputs = model(noisy_inputs)  # (batch_size, 30, 64, 64)
 
-            # Ensure shapes match before SSIM calculation
-            if outputs.shape != labels.shape:
-                print(f"Shape mismatch - outputs: {outputs.shape}, labels: {labels.shape}")
-                outputs = outputs[:, :, :labels.shape[2], :labels.shape[3]]  # Align shapes
+            print(f"Noisy inputs shape (eval): {noisy_inputs.shape}")
+            print(f"Model outputs shape (eval): {outputs.shape}")
 
-            ssim_score += calculate_ssim(outputs, labels).item()  # Use outputs directly
-            psnr_score += calculate_psnr(outputs, labels)  # Use outputs directly
+            ssim_score += calculate_ssim(outputs, labels).item()
+            psnr_score += calculate_psnr(outputs, labels)
 
     ssim_score /= len(test_loader)
     psnr_score /= len(test_loader)
 
     # visualize the last batch
     labels_np = labels.cpu().numpy()
-    outputs_np = outputs.cpu().numpy()  # Use outputs directly for visualization
+    outputs_np = outputs.cpu().numpy()
     image = plot_comparison(labels_np, outputs_np, slice_idx=16)
 
     run.log({
-        "lr": last_lr,
+        "lr": optimizer.param_groups[0]["lr"],
         "loss": epoch_loss,
         "ssim": ssim_score,
         "psnr": psnr_score,

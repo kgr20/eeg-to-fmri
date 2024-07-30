@@ -14,18 +14,17 @@ from PIL import Image
 import wandb
 from tqdm import tqdm
 from datetime import datetime
-from diffusers import DDPMScheduler
+from diffusers import DDPMScheduler, UNet2DModel
 import torchmetrics
 from torchvision import transforms
 import argparse
-from torchmetrics.image import StructuralSimilarityIndexMeasure
 
 # Argument parsing
 parser = argparse.ArgumentParser(description="EEG to fMRI Diffusion Model Training Script")
 parser.add_argument('--dataset_name', type=str, default="01", help="Dataset identifier")
 parser.add_argument('--data_root', type=str, default="/home/aca10131kr/gca50041/quan/Datasets/EEG2fMRI/h5_data/NODDI", help="Path to the dataset directory in h5 format")
 parser.add_argument('--work_dir', type=str, default="/home/aca10131kr/scratch_eeg-to-fmri", help="Path to save experiments")
-parser.add_argument('--num_epochs', type=int, default=200, help="Number of epochs for training")
+parser.add_argument('--num_epochs', type=int, default=300, help="Number of epochs for training")
 parser.add_argument('--batch_size', type=int, default=64, help="Batch size for training and testing")
 parser.add_argument('--lr', type=float, default=1e-3, help="Learning rate for optimizer")
 parser.add_argument('--weight_decay', type=float, default=0.01, help="Weight decay for optimizer")
@@ -34,45 +33,17 @@ args = parser.parse_args()
 
 # Device configuration
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-ssim_metric = StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
 
-# Define the UNet model for latent diffusion
-class LatentUNet(nn.Module):
-    def __init__(self, in_channels, out_channels):
-        super(LatentUNet, self).__init__()
-        self.encoder = nn.Sequential(
-            nn.Conv3d(in_channels, 64, kernel_size=3, padding=1),  # [B, 64, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(64, 128, kernel_size=3, padding=1),          # [B, 128, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.MaxPool3d(kernel_size=2, stride=2)                  # [B, 128, D//2, H//2, W//2]
-        )
-        self.middle = nn.Sequential(
-            nn.Conv3d(128, 256, kernel_size=3, padding=1),         # [B, 256, D//2, H//2, W//2]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(256, 512, kernel_size=3, padding=1),         # [B, 512, D//2, H//2, W//2]
-            nn.ReLU(inplace=True)
-        )
-        self.decoder = nn.Sequential(
-            nn.ConvTranspose3d(512, 256, kernel_size=2, stride=2), # [B, 256, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(256, 128, kernel_size=3, padding=1),         # [B, 128, D, H, W]
-            nn.ReLU(inplace=True),
-            nn.Conv3d(128, out_channels, kernel_size=3, padding=1) # [B, out_channels, D, H, W]
-        )
-
-    def forward(self, x):
-        print(f"Input shape: {x.shape}")
-        x1 = self.encoder(x)
-        print(f"Encoded shape: {x1.shape}")
-        x2 = self.middle(x1)
-        print(f"Middle shape: {x2.shape}")
-        x3 = self.decoder(x2)
-        print(f"Decoded shape: {x3.shape}")
-        return x3
-
-# Define the model
-model = LatentUNet(in_channels=64, out_channels=30).to(device)  # Adjusted in_channels to 64 for EEG latent space
+# Simplified model using Huggingface's UNet2DModel
+model = UNet2DModel(
+    sample_size=64,          # The resolution of the input images (64x64).
+    in_channels=10,          # Number of input channels, corresponding to the EEG data.
+    out_channels=30,         # Number of output channels, corresponding to the fMRI data.
+    layers_per_block=2,      # Number of layers per block. This parameter determines the depth of each block.
+    block_out_channels=(64, 128, 256, 512),  # Feature map sizes for each block. The number of elements here must match the number of down blocks.
+    down_block_types=("DownBlock2D", "DownBlock2D", "DownBlock2D", "DownBlock2D"),  # Types of down-sampling blocks used in the model.
+    up_block_types=("UpBlock2D", "UpBlock2D", "UpBlock2D", "UpBlock2D")  # Types of up-sampling blocks used in the model.
+).to(device)
 
 # Define the optimizer
 optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
@@ -140,7 +111,7 @@ def load_h5_from_list(data_root: str, individual_list: List):
 
 # Load the data
 train_list = ['32']
-test_list = ['32']
+test_list = ['43']
 
 print(f'Loading train data ...')
 eeg_train, fmri_train = load_h5_from_list(args.data_root, train_list)
@@ -148,21 +119,21 @@ print(f'Loading test data ...')
 eeg_test, fmri_test = load_h5_from_list(args.data_root, test_list)
 
 print("Shapes")
-print(f"EEG Train Shape: {eeg_train.shape}")   # (287, 64, 269, 10)
-print(f"fMRI Train Shape: {fmri_train.shape}") # (287, 64, 64, 30)
-print(f"EEG Test Shape: {eeg_test.shape}")     # (287, 64, 269, 10)
-print(f"fMRI Test Shape: {fmri_test.shape}")   # (287, 64, 64, 30)
+print(f"EEG Train Shape: {eeg_train.shape}")
+print(f"fMRI Train Shape: {fmri_train.shape}")
+print(f"EEG Test Shape: {eeg_test.shape}")
+print(f"fMRI Test Shape: {fmri_test.shape}")
 
-# Transpose to match PyTorch's [B, C, D, H, W] format
-eeg_train = eeg_train.transpose(0, 1, 3, 2)  # (287, 64, 10, 269)
-fmri_train = fmri_train.transpose(0, 3, 1, 2)  # (287, 30, 64, 64)
-eeg_test = eeg_test.transpose(0, 1, 3, 2)  # (287, 64, 10, 269)
-fmri_test = fmri_test.transpose(0, 3, 1, 2)  # (287, 30, 64, 64)
+# Transpose to match PyTorch's [C, H, W] format
+eeg_train = eeg_train.transpose(0, 3, 1, 2)
+fmri_train = fmri_train.transpose(0, 3, 1, 2)
+eeg_test = eeg_test.transpose(0, 3, 1, 2)
+fmri_test = fmri_test.transpose(0, 3, 1, 2)
 
 print("Shapes after transposition")
-print(f"EEG Train Shape: {eeg_train.shape}")   # (287, 64, 10, 269)
-print(f"fMRI Train Shape: {fmri_train.shape}") # (287, 30, 64, 64)
-print(f"EEG Test Shape: {eeg_test.shape}")     # (287, 64, 10, 269)
+print(f"EEG Train Shape: {eeg_train.shape}")
+print(f"fMRI Train Shape: {fmri_train.shape}")
+print(f"EEG Test Shape: {eeg_test.shape}")
 print(f"fMRI Test Shape: {fmri_test.shape}")
 
 # Normalize the data to range [0, 1]
@@ -185,10 +156,31 @@ class EEGfMRIDataset(Dataset):
         fmri = self.fmri_data[idx]
         return eeg, fmri
 
-# Update the train and test datasets with the transposed data
-train_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_train, dtype=torch.float32),
+# Resizing to ensure compatibility
+resize_transform = transforms.Compose([
+    transforms.Resize((64, 64)),  # Resize to 64x64
+])
+
+# Apply the transformation to the EEG data
+def resize_and_transform(data):
+    transformed_data = []
+    for image in data:
+        tensor_image = torch.tensor(image, dtype=torch.float32).permute(1, 2, 0)
+        resized_image = resize_transform(tensor_image).permute(2, 0, 1)
+        transformed_data.append(resized_image.numpy())
+    return np.array(transformed_data)
+
+eeg_train_resized = resize_and_transform(eeg_train)
+eeg_test_resized = resize_and_transform(eeg_test)
+
+# Ensure the number of channels remains the same
+eeg_train_resized = eeg_train_resized[:, :10, :, :]
+eeg_test_resized = eeg_test_resized[:, :10, :, :]
+
+# Update the train and test datasets with the resized images
+train_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_train_resized, dtype=torch.float32),
                                fmri_data=torch.tensor(fmri_train, dtype=torch.float32))
-test_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_test, dtype=torch.float32),
+test_dataset = EEGfMRIDataset(eeg_data=torch.tensor(eeg_test_resized, dtype=torch.float32),
                               fmri_data=torch.tensor(fmri_test, dtype=torch.float32))
 
 # Re-create DataLoader objects
@@ -196,8 +188,8 @@ train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=Tru
 test_loader = DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False)
 
 # Sample and check shapes again
-sample_image = torch.tensor(eeg_train[0:1], dtype=torch.float32).to(device)
-print("Input shape after transposing:", sample_image.shape)  # (1, 64, 10, 269)
+sample_image = torch.tensor(eeg_train_resized[0:1], dtype=torch.float32).to(device)
+print("Input shape after resizing:", sample_image.shape)
 
 # Initialize a new W&B run with the current timestamp
 timestamp = datetime.now().strftime('%Y%m%d-%H%M%S')
@@ -228,23 +220,16 @@ for epoch in pbar:
     model.train()
     running_loss = 0.0
     for inputs, labels in train_loader:
-        inputs = inputs.to(device)  # (batch_size, 64, 10, 269)
-        labels = labels.to(device)  # (batch_size, 30, 64, 64)
+        inputs = inputs.to(device)
+        labels = labels.to(device)
 
         optimizer.zero_grad()
         timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
-        noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 10, 269)
-        noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 10, 269)
-        outputs = model(noisy_inputs)  # (batch_size, 30, 64, 64)
+        noise = torch.randn_like(inputs).to(device)
+        noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)
+        outputs = model(noisy_inputs, timesteps)  # Pass the timesteps argument
 
-        # Ensure shapes match before SSIM calculation
-        if outputs.shape != labels.shape:
-            print(f"Shape mismatch - outputs: {outputs.shape}, labels: {labels.shape}")
-            outputs = outputs[:, :, :labels.shape[2], :labels.shape[3]]  # Align shapes
-
-        # Calculate SSIM loss
-        ssim_loss = 1 - ssim_metric(outputs, labels)  # Use outputs directly
-        loss = ssim_loss
+        loss = criterion(outputs.sample, labels)  # Access the .sample attribute for the loss computation
         loss.backward()
 
         optimizer.step()
@@ -265,27 +250,21 @@ for epoch in pbar:
     psnr_score = 0.0
     with torch.no_grad():
         for inputs, labels in test_loader:
-            inputs = inputs.to(device)  # (batch_size, 64, 10, 269)
-            labels = labels.to(device)  # (batch_size, 30, 64, 64)
+            inputs = inputs.to(device)
+            labels = labels.to(device)
             timesteps = torch.randint(0, scheduler.config.num_train_timesteps, (inputs.size(0),), device=device).long()
-            noise = torch.randn_like(inputs).to(device)  # (batch_size, 64, 10, 269)
-            noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)  # (batch_size, 64, 10, 269)
-            outputs = model(noisy_inputs)  # (batch_size, 30, 64, 64)
-
-            # Ensure shapes match before SSIM calculation
-            if outputs.shape != labels.shape:
-                print(f"Shape mismatch - outputs: {outputs.shape}, labels: {labels.shape}")
-                outputs = outputs[:, :, :labels.shape[2], :labels.shape[3]]  # Align shapes
-
-            ssim_score += calculate_ssim(outputs, labels).item()  # Use outputs directly
-            psnr_score += calculate_psnr(outputs, labels)  # Use outputs directly
+            noise = torch.randn_like(inputs).to(device)
+            noisy_inputs = scheduler.add_noise(inputs, noise, timesteps)
+            outputs = model(noisy_inputs, timesteps)  # Pass the timesteps argument
+            ssim_score += calculate_ssim(outputs.sample, labels).item()  # Access the .sample attribute for SSIM computation
+            psnr_score += calculate_psnr(outputs.sample, labels)  # Access the .sample attribute for PSNR computation
 
     ssim_score /= len(test_loader)
     psnr_score /= len(test_loader)
 
     # visualize the last batch
     labels_np = labels.cpu().numpy()
-    outputs_np = outputs.cpu().numpy()  # Use outputs directly for visualization
+    outputs_np = outputs.sample.cpu().numpy()  # Access the .sample attribute for visualization
     image = plot_comparison(labels_np, outputs_np, slice_idx=16)
 
     run.log({
