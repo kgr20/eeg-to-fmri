@@ -1,0 +1,18 @@
+/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/loss.py:535: UserWarning: Using a target size (torch.Size([8, 30, 64, 64])) that is different to the input size (torch.Size([8, 30, 128, 320])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  return F.mse_loss(input, target, reduction=self.reduction)
+Traceback (most recent call last):
+  File "20240730_Diffusion.py", line 268, in <module>
+    train(model, scheduler, train_loader, criterion, optimizer, device)
+  File "20240730_Diffusion.py", line 127, in train
+    loss = criterion(outputs.sample, labels)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/loss.py", line 535, in forward
+    return F.mse_loss(input, target, reduction=self.reduction)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/functional.py", line 3365, in mse_loss
+    expanded_input, expanded_target = torch.broadcast_tensors(input, target)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/functional.py", line 76, in broadcast_tensors
+    return _VF.broadcast_tensors(tensors)  # type: ignore[attr-defined]
+RuntimeError: The size of tensor a (320) must match the size of tensor b (64) at non-singleton dimension 3

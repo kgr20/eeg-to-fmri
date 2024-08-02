@@ -1,0 +1,29 @@
+Timesteps shape: torch.Size([64])
+Noisy inputs shape: torch.Size([64, 10, 64, 269])
+Input shape: torch.Size([64, 10, 64, 269])
+  0%|          | 0/300 [00:00<?, ?it/s]
+  0%|          | 0/300 [00:05<?, ?it/s]
+Traceback (most recent call last):
+  File "20240730_Diffusion.py", line 292, in <module>
+    outputs = model(inputs, timesteps)  # Pass the timesteps argument
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "20240730_Diffusion.py", line 191, in forward
+    x = self.diffusion_model(x, timesteps)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "20240730_Diffusion.py", line 128, in forward
+    return super().forward(sample, timesteps)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/diffusers/models/unets/unet_2d.py", line 329, in forward
+    sample = upsample_block(sample, res_samples, emb)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/diffusers/models/unets/unet_2d_blocks.py", line 2654, in forward
+    hidden_states = torch.cat([hidden_states, res_hidden_states], dim=1)
+RuntimeError: Sizes of tensors must match except in dimension 1. Expected size 2 but got size 1 for tensor number 1 in the list.

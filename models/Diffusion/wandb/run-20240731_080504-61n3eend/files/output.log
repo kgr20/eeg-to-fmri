@@ -1,0 +1,9 @@
+  0%|                                                                                                                   | 0/300 [00:00<?, ?it/s]
+Traceback (most recent call last):
+  File "20240730_Diffusion.py", line 297, in <module>
+    outputs = model(noisy_inputs, timesteps)  # Pass the timesteps argument
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+TypeError: forward() takes 2 positional arguments but 3 were given

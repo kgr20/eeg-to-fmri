@@ -111,7 +111,7 @@ def load_h5_from_list(data_root: str, individual_list: List):
 
 # Load the data
 train_list = ['32']
-test_list = ['43']
+test_list = ['32']
 
 print(f'Loading train data ...')
 eeg_train, fmri_train = load_h5_from_list(args.data_root, train_list)
