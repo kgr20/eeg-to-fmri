@@ -1,0 +1,56 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+wandb: Currently logged in as: kris-g-roos (kris-g-roos-National University of Singapore). Use `wandb login --relogin` to force relogin
+Training Individuals: ['32', '35', '36', '37', '38', '39', '40', '42', '45', '46', '47', '48', '49', '50']
+Testing Individuals: ['43', '44']
+Loading training data...
+  0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   7%|▋         | 1/14 [00:01<00:13,  1.04s/it]Loading Individual 37:   7%|▋         | 1/14 [00:01<00:13,  1.04s/it]Loading Individual 37:  14%|█▍        | 2/14 [00:01<00:11,  1.03it/s]Loading Individual 42:  14%|█▍        | 2/14 [00:01<00:11,  1.03it/s]Loading Individual 42:  21%|██▏       | 3/14 [00:04<00:17,  1.59s/it]Loading Individual 45:  21%|██▏       | 3/14 [00:04<00:17,  1.59s/it]Loading Individual 45:  29%|██▊       | 4/14 [00:06<00:16,  1.70s/it]Loading Individual 35:  29%|██▊       | 4/14 [00:06<00:16,  1.70s/it]Loading Individual 35:  36%|███▌      | 5/14 [00:07<00:13,  1.54s/it]Loading Individual 40:  36%|███▌      | 5/14 [00:07<00:13,  1.54s/it]Loading Individual 40:  43%|████▎     | 6/14 [00:08<00:10,  1.33s/it]Loading Individual 39:  43%|████▎     | 6/14 [00:08<00:10,  1.33s/it]Loading Individual 39:  50%|█████     | 7/14 [00:11<00:13,  1.97s/it]Loading Individual 32:  50%|█████     | 7/14 [00:11<00:13,  1.97s/it]Loading Individual 32:  57%|█████▋    | 8/14 [00:12<00:09,  1.66s/it]Loading Individual 50:  57%|█████▋    | 8/14 [00:12<00:09,  1.66s/it]Loading Individual 50:  64%|██████▍   | 9/14 [00:13<00:07,  1.46s/it]Loading Individual 46:  64%|██████▍   | 9/14 [00:13<00:07,  1.46s/it]Loading Individual 46:  71%|███████▏  | 10/14 [00:14<00:05,  1.37s/it]Loading Individual 38:  71%|███████▏  | 10/14 [00:14<00:05,  1.37s/it]Loading Individual 38:  79%|███████▊  | 11/14 [00:16<00:04,  1.36s/it]Loading Individual 49:  79%|███████▊  | 11/14 [00:16<00:04,  1.36s/it]Loading Individual 49:  86%|████████▌ | 12/14 [00:17<00:02,  1.49s/it]Loading Individual 36:  86%|████████▌ | 12/14 [00:17<00:02,  1.49s/it]Loading Individual 36:  93%|█████████▎| 13/14 [00:20<00:01,  1.80s/it]Loading Individual 47:  93%|█████████▎| 13/14 [00:20<00:01,  1.80s/it]Loading Individual 47: 100%|██████████| 14/14 [00:22<00:00,  1.89s/it]Loading Individual 47: 100%|██████████| 14/14 [00:22<00:00,  1.61s/it]
+Loading testing data...
+  0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:   0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:  50%|█████     | 1/2 [00:02<00:02,  2.14s/it]Loading Individual 44:  50%|█████     | 1/2 [00:02<00:02,  2.14s/it]Loading Individual 44: 100%|██████████| 2/2 [00:03<00:00,  1.57s/it]Loading Individual 44: 100%|██████████| 2/2 [00:03<00:00,  1.66s/it]
+wandb: wandb version 0.18.5 is available!  To upgrade, please run:
+wandb:  $ pip install wandb --upgrade
+wandb: Tracking run with wandb version 0.17.5
+wandb: Run data is saved locally in /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_034726-p86mrk0l
+wandb: Run `wandb offline` to turn off syncing.
+wandb: Syncing run dataset_01_unet3d_run_20241022-034726
+wandb: ⭐️ View project at https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project
+wandb: 🚀 View run at https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project/runs/p86mrk0l
+EEG Train Shape: torch.Size([4018, 1, 64, 269, 10])
+fMRI Train Shape: torch.Size([4018, 1, 64, 64, 30])
+EEG Test Shape: torch.Size([574, 1, 64, 269, 10])
+fMRI Test Shape: torch.Size([574, 1, 64, 64, 30])
+  0%|          | 0/100 [00:00<?, ?it/s]  0%|          | 0/100 [00:05<?, ?it/s]
+wandb: - 0.009 MB of 0.021 MB uploadedwandb: \ 0.021 MB of 0.021 MB uploadedwandb: 🚀 View run dataset_01_unet3d_run_20241022-034726 at: https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project/runs/p86mrk0l
+wandb: ⭐️ View project at: https://wandb.ai/kris-g-roos-National%20University%20of%20Singapore/eeg_fmri_project
+wandb: Synced 6 W&B file(s), 0 media file(s), 0 artifact file(s) and 0 other file(s)
+wandb: Find logs at: ./wandb/run-20241022_034726-p86mrk0l/logs
+wandb: WARNING The new W&B backend becomes opt-out in version 0.18.0; try it out with `wandb.require("core")`! See https://wandb.me/wandb-core for more information.
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 337, in <module>
+    main()
+  File "202410_Diffusion.py", line 269, in main
+    loss = criterion(outputs, labels)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "202410_Diffusion.py", line 93, in forward
+    ssim_loss = 1 - self.ssim(img1, img2)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 311, in forward
+    self._forward_cache = self._forward_reduce_state_update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 380, in _forward_reduce_state_update
+    self.update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 492, in wrapped_func
+    raise err
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 482, in wrapped_func
+    update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/image/ssim.py", line 130, in update
+    preds, target = _ssim_check_inputs(preds, target)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/functional/image/ssim.py", line 36, in _ssim_check_inputs
+    _check_same_shape(preds, target)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/utilities/checks.py", line 42, in _check_same_shape
+    raise RuntimeError(
+RuntimeError: Predictions and targets are expected to have the same shape, but got torch.Size([2, 1, 64, 269, 10]) and torch.Size([2, 1, 64, 64, 30]).

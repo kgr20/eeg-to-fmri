@@ -1,0 +1,7 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 104, in <module>
+    main()
+  File "202410_Diffusion.py", line 74, in main
+    eeg_train = torch.tensor(eeg_train, dtype=torch.float32).permute(0, 3, 1, 2)
+UnboundLocalError: local variable 'eeg_train' referenced before assignment

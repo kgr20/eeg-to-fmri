@@ -22,6 +22,8 @@ import wandb
 from tqdm import tqdm
 from datetime import datetime
 import argparse
+from torchmetrics import MeanSquaredError
+
 
 filename = "20240729_AE.py"
 
@@ -88,6 +90,8 @@ def calculate_psnr(img1, img2):
     mse = nn.functional.mse_loss(img1, img2)
     psnr = 20 * torch.log10(1.0 / torch.sqrt(mse))
     return psnr.item()
+
+calculate_rmse = MeanSquaredError(squared=False).to(device)
 
 def load_h5_from_list(data_root: str, individual_list: List):
     eeg_data = None
@@ -220,16 +224,18 @@ for epoch in pbar:
     model.eval()
     ssim_score = 0.0
     psnr_score = 0.0
+    rmse_score = 0.0
     with torch.no_grad():
         for inputs, labels in test_loader:
             inputs = inputs.to(device)
             labels = labels.to(device)
-            # labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
 
             outputs = model(inputs)
             ssim_score += calculate_ssim(outputs, labels).item()
             psnr_score += calculate_psnr(outputs, labels)
+            rmse_score += calculate_rmse(outputs, labels).item()
 
+    rmse_score /= len(test_loader)
     ssim_score /= len(test_loader)
     psnr_score /= len(test_loader)
 
@@ -243,6 +249,7 @@ for epoch in pbar:
         "loss": epoch_loss,
         "ssim": ssim_score,
         "psnr": psnr_score,
+        "rmse": rmse_score,
         "image": wandb.Image(image),
     })
 

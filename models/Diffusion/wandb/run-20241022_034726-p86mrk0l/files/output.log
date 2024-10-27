@@ -1,0 +1,32 @@
+
+  0%|          | 0/100 [00:05<?, ?it/s]
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 337, in <module>
+    main()
+  File "202410_Diffusion.py", line 269, in main
+    loss = criterion(outputs, labels)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "202410_Diffusion.py", line 93, in forward
+    ssim_loss = 1 - self.ssim(img1, img2)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1532, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torch/nn/modules/module.py", line 1541, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 311, in forward
+    self._forward_cache = self._forward_reduce_state_update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 380, in _forward_reduce_state_update
+    self.update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 492, in wrapped_func
+    raise err
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/metric.py", line 482, in wrapped_func
+    update(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/image/ssim.py", line 130, in update
+    preds, target = _ssim_check_inputs(preds, target)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/functional/image/ssim.py", line 36, in _ssim_check_inputs
+    _check_same_shape(preds, target)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/torchmetrics/utilities/checks.py", line 42, in _check_same_shape
+    raise RuntimeError(
+RuntimeError: Predictions and targets are expected to have the same shape, but got torch.Size([2, 1, 64, 269, 10]) and torch.Size([2, 1, 64, 64, 30]).

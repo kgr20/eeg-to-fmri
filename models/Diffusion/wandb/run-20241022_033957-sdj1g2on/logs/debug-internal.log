@@ -1,0 +1,191 @@
+2024-10-22 03:39:57,875 INFO    StreamThr :782969 [internal.py:wandb_internal():85] W&B internal server running at pid: 782969, started at: 2024-10-22 03:39:57.873988
+2024-10-22 03:39:57,876 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: status
+2024-10-22 03:39:57,881 INFO    WriterThread:782969 [datastore.py:open_for_write():87] open: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/run-sdj1g2on.wandb
+2024-10-22 03:39:57,882 DEBUG   SenderThread:782969 [sender.py:send():379] send: header
+2024-10-22 03:39:57,934 DEBUG   SenderThread:782969 [sender.py:send():379] send: run
+2024-10-22 03:39:58,293 INFO    SenderThread:782969 [dir_watcher.py:__init__():211] watching files in: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files
+2024-10-22 03:39:58,293 INFO    SenderThread:782969 [sender.py:_start_run_threads():1188] run started: sdj1g2on with start time 1729535997.877368
+2024-10-22 03:39:58,304 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: check_version
+2024-10-22 03:39:58,304 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: check_version
+2024-10-22 03:39:58,381 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: run_start
+2024-10-22 03:39:58,387 DEBUG   HandlerThread:782969 [system_info.py:__init__():26] System info init
+2024-10-22 03:39:58,387 DEBUG   HandlerThread:782969 [system_info.py:__init__():41] System info init done
+2024-10-22 03:39:58,387 INFO    HandlerThread:782969 [system_monitor.py:start():194] Starting system monitor
+2024-10-22 03:39:58,388 INFO    SystemMonitor:782969 [system_monitor.py:_start():158] Starting system asset monitoring threads
+2024-10-22 03:39:58,388 INFO    HandlerThread:782969 [system_monitor.py:probe():214] Collecting system info
+2024-10-22 03:39:58,388 INFO    SystemMonitor:782969 [interfaces.py:start():188] Started cpu monitoring
+2024-10-22 03:39:58,389 INFO    SystemMonitor:782969 [interfaces.py:start():188] Started disk monitoring
+2024-10-22 03:39:58,389 INFO    SystemMonitor:782969 [interfaces.py:start():188] Started gpu monitoring
+2024-10-22 03:39:58,390 INFO    SystemMonitor:782969 [interfaces.py:start():188] Started memory monitoring
+2024-10-22 03:39:58,390 INFO    SystemMonitor:782969 [interfaces.py:start():188] Started network monitoring
+2024-10-22 03:39:58,425 DEBUG   HandlerThread:782969 [system_info.py:probe():152] Probing system
+2024-10-22 03:39:58,432 DEBUG   HandlerThread:782969 [system_info.py:_probe_git():137] Probing git
+2024-10-22 03:39:58,454 DEBUG   HandlerThread:782969 [system_info.py:_probe_git():145] Probing git done
+2024-10-22 03:39:58,454 DEBUG   HandlerThread:782969 [system_info.py:probe():200] Probing system done
+2024-10-22 03:39:58,454 DEBUG   HandlerThread:782969 [system_monitor.py:probe():223] {'os': 'Linux-4.18.0-372.9.1.el8.x86_64-x86_64-with-glibc2.17', 'python': '3.8.19', 'heartbeatAt': '2024-10-21T18:39:58.425898', 'startedAt': '2024-10-21T18:39:57.851611', 'docker': None, 'cuda': None, 'args': (), 'state': 'running', 'program': '202410_Diffusion.py', 'codePathLocal': '202410_Diffusion.py', 'codePath': 'models/Diffusion/202410_Diffusion.py', 'git': {'remote': 'git@github.com:kgr20/eeg-to-fmri.git', 'commit': 'db007ad24391066ca58272492be082de14cd0ec3'}, 'email': 'kris.g.roos@gmail.com', 'root': '/home/aca10131kr/eeg-to-fmri', 'host': 'g0827.abci.local', 'username': 'aca10131kr', 'executable': '/home/aca10131kr/anaconda3/envs/py38/bin/python', 'cpu_count': 40, 'cpu_count_logical': 80, 'cpu_freq': {'current': 2716.9841750000005, 'min': 1000.0, 'max': 3700.0}, 'cpu_freq_per_core': [{'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3164.575, 'min': 1000.0, 'max': 3700.0}, {'current': 3034.471, 'min': 1000.0, 'max': 3700.0}, {'current': 3169.508, 'min': 1000.0, 'max': 3700.0}, {'current': 3172.121, 'min': 1000.0, 'max': 3700.0}, {'current': 3167.592, 'min': 1000.0, 'max': 3700.0}, {'current': 3022.183, 'min': 1000.0, 'max': 3700.0}, {'current': 3374.025, 'min': 1000.0, 'max': 3700.0}, {'current': 3373.942, 'min': 1000.0, 'max': 3700.0}, {'current': 3167.916, 'min': 1000.0, 'max': 3700.0}, {'current': 3171.484, 'min': 1000.0, 'max': 3700.0}, {'current': 3333.014, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3334.742, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3336.016, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3337.786, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2838.293, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3161.645, 'min': 1000.0, 'max': 3700.0}, {'current': 3029.064, 'min': 1000.0, 'max': 3700.0}, {'current': 3166.992, 'min': 1000.0, 'max': 3700.0}, {'current': 3168.783, 'min': 1000.0, 'max': 3700.0}, {'current': 3164.489, 'min': 1000.0, 'max': 3700.0}, {'current': 3015.158, 'min': 1000.0, 'max': 3700.0}, {'current': 3371.68, 'min': 1000.0, 'max': 3700.0}, {'current': 3371.588, 'min': 1000.0, 'max': 3700.0}, {'current': 3161.388, 'min': 1000.0, 'max': 3700.0}, {'current': 3165.782, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3344.243, 'min': 1000.0, 'max': 3700.0}, {'current': 3344.293, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3344.491, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3344.837, 'min': 1000.0, 'max': 3700.0}, {'current': 3344.893, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3345.285, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 3109.378, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}, {'current': 2400.0, 'min': 1000.0, 'max': 3700.0}], 'disk': {'/': {'total': 21.9892578125, 'used': 16.278121948242188}}, 'gpu': 'Tesla V100-SXM2-16GB', 'gpu_count': 1, 'gpu_devices': [{'name': 'Tesla V100-SXM2-16GB', 'memory_total': 17179869184}], 'memory': {'total': 376.2595558166504}}
+2024-10-22 03:39:58,454 INFO    HandlerThread:782969 [system_monitor.py:probe():224] Finished collecting system info
+2024-10-22 03:39:58,454 INFO    HandlerThread:782969 [system_monitor.py:probe():227] Publishing system info
+2024-10-22 03:39:58,454 DEBUG   HandlerThread:782969 [system_info.py:_save_conda():209] Saving list of conda packages installed into the current environment
+2024-10-22 03:39:59,295 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_created():271] file/dir created: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/conda-environment.yaml
+2024-10-22 03:40:03,186 DEBUG   HandlerThread:782969 [system_info.py:_save_conda():224] Saving conda packages done
+2024-10-22 03:40:03,188 INFO    HandlerThread:782969 [system_monitor.py:probe():229] Finished publishing system info
+2024-10-22 03:40:03,196 DEBUG   SenderThread:782969 [sender.py:send():379] send: files
+2024-10-22 03:40:03,196 INFO    SenderThread:782969 [sender.py:_save_file():1454] saving file wandb-metadata.json with policy now
+2024-10-22 03:40:03,196 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: status_report
+2024-10-22 03:40:03,297 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/conda-environment.yaml
+2024-10-22 03:40:03,297 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_created():271] file/dir created: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/wandb-metadata.json
+2024-10-22 03:40:03,457 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: python_packages
+2024-10-22 03:40:03,458 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: python_packages
+2024-10-22 03:40:03,458 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: stop_status
+2024-10-22 03:40:03,459 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: internal_messages
+2024-10-22 03:40:03,461 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: stop_status
+2024-10-22 03:40:03,702 DEBUG   SenderThread:782969 [sender.py:send():379] send: telemetry
+2024-10-22 03:40:03,912 INFO    wandb-upload_0:782969 [upload_job.py:push():130] Uploaded file /tmp/43197446.1.gpu/tmpikr7_9w6wandb/q1h8yb0w-wandb-metadata.json
+2024-10-22 03:40:04,298 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_created():271] file/dir created: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/requirements.txt
+2024-10-22 03:40:04,458 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: internal_messages
+2024-10-22 03:40:05,458 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: internal_messages
+2024-10-22 03:40:06,459 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: internal_messages
+2024-10-22 03:40:06,947 DEBUG   SenderThread:782969 [sender.py:send():379] send: exit
+2024-10-22 03:40:06,947 INFO    SenderThread:782969 [sender.py:send_exit():586] handling exit code: 1
+2024-10-22 03:40:06,948 INFO    SenderThread:782969 [sender.py:send_exit():588] handling runtime: 8
+2024-10-22 03:40:06,950 INFO    SenderThread:782969 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-10-22 03:40:06,950 INFO    SenderThread:782969 [sender.py:send_exit():594] send defer
+2024-10-22 03:40:06,950 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:06,950 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 0
+2024-10-22 03:40:06,951 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:06,951 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 0
+2024-10-22 03:40:06,951 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 1
+2024-10-22 03:40:06,951 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:06,951 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 1
+2024-10-22 03:40:06,951 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:06,951 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 1
+2024-10-22 03:40:06,951 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 2
+2024-10-22 03:40:06,951 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:06,951 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 2
+2024-10-22 03:40:06,951 INFO    HandlerThread:782969 [system_monitor.py:finish():203] Stopping system monitor
+2024-10-22 03:40:06,951 DEBUG   SystemMonitor:782969 [system_monitor.py:_start():172] Starting system metrics aggregation loop
+2024-10-22 03:40:06,952 INFO    HandlerThread:782969 [interfaces.py:finish():200] Joined cpu monitor
+2024-10-22 03:40:06,952 DEBUG   SystemMonitor:782969 [system_monitor.py:_start():179] Finished system metrics aggregation loop
+2024-10-22 03:40:06,952 INFO    HandlerThread:782969 [interfaces.py:finish():200] Joined disk monitor
+2024-10-22 03:40:06,952 DEBUG   SystemMonitor:782969 [system_monitor.py:_start():183] Publishing last batch of metrics
+2024-10-22 03:40:07,074 INFO    HandlerThread:782969 [interfaces.py:finish():200] Joined gpu monitor
+2024-10-22 03:40:07,074 INFO    HandlerThread:782969 [interfaces.py:finish():200] Joined memory monitor
+2024-10-22 03:40:07,074 INFO    HandlerThread:782969 [interfaces.py:finish():200] Joined network monitor
+2024-10-22 03:40:07,075 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,075 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 2
+2024-10-22 03:40:07,075 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 3
+2024-10-22 03:40:07,075 DEBUG   SenderThread:782969 [sender.py:send():379] send: stats
+2024-10-22 03:40:07,075 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:07,076 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 3
+2024-10-22 03:40:07,076 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,076 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 3
+2024-10-22 03:40:07,076 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 4
+2024-10-22 03:40:07,076 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:07,076 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 4
+2024-10-22 03:40:07,076 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,076 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 4
+2024-10-22 03:40:07,076 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 5
+2024-10-22 03:40:07,076 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:07,076 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 5
+2024-10-22 03:40:07,077 DEBUG   SenderThread:782969 [sender.py:send():379] send: summary
+2024-10-22 03:40:07,078 INFO    SenderThread:782969 [sender.py:_save_file():1454] saving file wandb-summary.json with policy end
+2024-10-22 03:40:07,078 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,078 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 5
+2024-10-22 03:40:07,078 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 6
+2024-10-22 03:40:07,078 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:07,078 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 6
+2024-10-22 03:40:07,079 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,079 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 6
+2024-10-22 03:40:07,082 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: status_report
+2024-10-22 03:40:07,240 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 7
+2024-10-22 03:40:07,240 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:07,241 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 7
+2024-10-22 03:40:07,241 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:07,241 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 7
+2024-10-22 03:40:07,301 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/config.yaml
+2024-10-22 03:40:07,301 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_created():271] file/dir created: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/wandb-summary.json
+2024-10-22 03:40:07,301 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_created():271] file/dir created: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/output.log
+2024-10-22 03:40:07,948 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: poll_exit
+2024-10-22 03:40:08,865 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 8
+2024-10-22 03:40:08,865 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: poll_exit
+2024-10-22 03:40:08,865 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:08,866 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 8
+2024-10-22 03:40:08,866 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:08,866 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 8
+2024-10-22 03:40:08,866 INFO    SenderThread:782969 [job_builder.py:build():440] Attempting to build job artifact
+2024-10-22 03:40:08,867 INFO    SenderThread:782969 [job_builder.py:_get_source_type():569] is repo sourced job
+2024-10-22 03:40:08,910 INFO    SenderThread:782969 [job_builder.py:build():545] adding wandb-job metadata file
+2024-10-22 03:40:08,920 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 9
+2024-10-22 03:40:08,920 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:08,921 DEBUG   SenderThread:782969 [sender.py:send():379] send: artifact
+2024-10-22 03:40:08,921 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 9
+2024-10-22 03:40:08,948 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: poll_exit
+2024-10-22 03:40:09,303 INFO    Thread-12 :782969 [dir_watcher.py:_on_file_modified():288] file/dir modified: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/output.log
+2024-10-22 03:40:09,704 INFO    SenderThread:782969 [sender.py:send_artifact():1537] sent artifact job-git_github.com_kgr20_eeg-to-fmri.git_models_Diffusion_202410_Diffusion.py - {'id': 'QXJ0aWZhY3Q6MTI4ODczOTAwOA==', 'state': 'COMMITTED', 'artifactSequence': {'id': 'QXJ0aWZhY3RDb2xsZWN0aW9uOjQ3OTcyNzcyNg==', 'latestArtifact': {'id': 'QXJ0aWZhY3Q6MTI4ODc3MTMzNw==', 'versionIndex': 1}}}
+2024-10-22 03:40:09,704 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:09,704 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 9
+2024-10-22 03:40:09,704 INFO    SenderThread:782969 [dir_watcher.py:finish():358] shutting down directory watcher
+2024-10-22 03:40:10,304 INFO    SenderThread:782969 [dir_watcher.py:finish():388] scan: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files
+2024-10-22 03:40:10,305 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/wandb-summary.json wandb-summary.json
+2024-10-22 03:40:10,305 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/conda-environment.yaml conda-environment.yaml
+2024-10-22 03:40:10,306 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/wandb-metadata.json wandb-metadata.json
+2024-10-22 03:40:10,306 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/output.log output.log
+2024-10-22 03:40:10,310 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/requirements.txt requirements.txt
+2024-10-22 03:40:10,312 INFO    SenderThread:782969 [dir_watcher.py:finish():402] scan save: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/config.yaml config.yaml
+2024-10-22 03:40:10,314 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 10
+2024-10-22 03:40:10,314 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: poll_exit
+2024-10-22 03:40:10,314 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:10,316 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 10
+2024-10-22 03:40:10,317 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:10,317 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 10
+2024-10-22 03:40:10,317 INFO    SenderThread:782969 [file_pusher.py:finish():169] shutting down file pusher
+2024-10-22 03:40:10,703 INFO    wandb-upload_0:782969 [upload_job.py:push():130] Uploaded file /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/wandb-summary.json
+2024-10-22 03:40:10,760 INFO    wandb-upload_1:782969 [upload_job.py:push():130] Uploaded file /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/conda-environment.yaml
+2024-10-22 03:40:10,781 INFO    wandb-upload_4:782969 [upload_job.py:push():130] Uploaded file /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/config.yaml
+2024-10-22 03:40:10,788 INFO    wandb-upload_2:782969 [upload_job.py:push():130] Uploaded file /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/output.log
+2024-10-22 03:40:10,790 INFO    wandb-upload_3:782969 [upload_job.py:push():130] Uploaded file /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/files/requirements.txt
+2024-10-22 03:40:10,951 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: poll_exit
+2024-10-22 03:40:10,951 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: poll_exit
+2024-10-22 03:40:10,990 INFO    Thread-11 :782969 [sender.py:transition_state():614] send defer: 11
+2024-10-22 03:40:10,990 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:10,990 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 11
+2024-10-22 03:40:10,991 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:10,991 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 11
+2024-10-22 03:40:10,991 INFO    SenderThread:782969 [file_pusher.py:join():175] waiting for file pusher
+2024-10-22 03:40:10,991 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 12
+2024-10-22 03:40:10,991 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:10,991 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 12
+2024-10-22 03:40:10,991 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:10,991 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 12
+2024-10-22 03:40:10,991 INFO    SenderThread:782969 [file_stream.py:finish():601] file stream finish called
+2024-10-22 03:40:11,187 INFO    SenderThread:782969 [file_stream.py:finish():605] file stream finish is done
+2024-10-22 03:40:11,188 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 13
+2024-10-22 03:40:11,188 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:11,188 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 13
+2024-10-22 03:40:11,188 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:11,188 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 13
+2024-10-22 03:40:11,188 INFO    SenderThread:782969 [sender.py:transition_state():614] send defer: 14
+2024-10-22 03:40:11,188 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: defer
+2024-10-22 03:40:11,189 DEBUG   SenderThread:782969 [sender.py:send():379] send: final
+2024-10-22 03:40:11,189 INFO    HandlerThread:782969 [handler.py:handle_request_defer():184] handle defer: 14
+2024-10-22 03:40:11,189 DEBUG   SenderThread:782969 [sender.py:send():379] send: footer
+2024-10-22 03:40:11,189 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: defer
+2024-10-22 03:40:11,189 INFO    SenderThread:782969 [sender.py:send_request_defer():610] handle sender defer: 14
+2024-10-22 03:40:11,189 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: poll_exit
+2024-10-22 03:40:11,189 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: poll_exit
+2024-10-22 03:40:11,190 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: server_info
+2024-10-22 03:40:11,190 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: server_info
+2024-10-22 03:40:11,190 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: poll_exit
+2024-10-22 03:40:11,192 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: get_summary
+2024-10-22 03:40:11,192 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: sampled_history
+2024-10-22 03:40:11,193 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: internal_messages
+2024-10-22 03:40:11,334 DEBUG   SenderThread:782969 [sender.py:send_request():406] send_request: poll_exit
+2024-10-22 03:40:11,334 INFO    MainThread:782969 [wandb_run.py:_footer_history_summary_info():4016] rendering history
+2024-10-22 03:40:11,334 INFO    MainThread:782969 [wandb_run.py:_footer_history_summary_info():4048] rendering summary
+2024-10-22 03:40:11,335 INFO    MainThread:782969 [wandb_run.py:_footer_sync_info():3975] logging synced files
+2024-10-22 03:40:11,335 DEBUG   HandlerThread:782969 [handler.py:handle_request():158] handle_request: shutdown
+2024-10-22 03:40:11,335 INFO    HandlerThread:782969 [handler.py:finish():882] shutting down handler
+2024-10-22 03:40:12,192 INFO    WriterThread:782969 [datastore.py:close():296] close: /home/aca10131kr/eeg-to-fmri/models/Diffusion/wandb/run-20241022_033957-sdj1g2on/run-sdj1g2on.wandb
+2024-10-22 03:40:12,334 INFO    SenderThread:782969 [sender.py:finish():1615] shutting down sender
+2024-10-22 03:40:12,335 INFO    SenderThread:782969 [file_pusher.py:finish():169] shutting down file pusher
+2024-10-22 03:40:12,335 INFO    SenderThread:782969 [file_pusher.py:join():175] waiting for file pusher

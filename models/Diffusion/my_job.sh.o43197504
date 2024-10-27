@@ -1,0 +1,18 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+wandb: Currently logged in as: kris-g-roos (kris-g-roos-National University of Singapore). Use `wandb login --relogin` to force relogin
+Training Individuals: ['32', '35', '36', '37', '38', '39', '40', '42', '45', '46', '47', '48', '49', '50']
+Testing Individuals: ['43', '44']
+Loading training data...
+  0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   7%|▋         | 1/14 [00:01<00:13,  1.05s/it]Loading Individual 37:   7%|▋         | 1/14 [00:01<00:13,  1.05s/it]Loading Individual 37:  14%|█▍        | 2/14 [00:01<00:11,  1.02it/s]Loading Individual 42:  14%|█▍        | 2/14 [00:01<00:11,  1.02it/s]Loading Individual 42:  21%|██▏       | 3/14 [00:02<00:10,  1.04it/s]Loading Individual 45:  21%|██▏       | 3/14 [00:02<00:10,  1.04it/s]Loading Individual 45:  29%|██▊       | 4/14 [00:03<00:09,  1.01it/s]Loading Individual 35:  29%|██▊       | 4/14 [00:03<00:09,  1.01it/s]Loading Individual 35:  36%|███▌      | 5/14 [00:04<00:08,  1.05it/s]Loading Individual 40:  36%|███▌      | 5/14 [00:04<00:08,  1.05it/s]Loading Individual 40:  43%|████▎     | 6/14 [00:05<00:06,  1.17it/s]Loading Individual 39:  43%|████▎     | 6/14 [00:05<00:06,  1.17it/s]Loading Individual 39:  50%|█████     | 7/14 [00:06<00:06,  1.05it/s]Loading Individual 32:  50%|█████     | 7/14 [00:06<00:06,  1.05it/s]Loading Individual 32:  57%|█████▋    | 8/14 [00:07<00:04,  1.25it/s]Loading Individual 50:  57%|█████▋    | 8/14 [00:07<00:04,  1.25it/s]Loading Individual 50:  64%|██████▍   | 9/14 [00:07<00:03,  1.43it/s]Loading Individual 46:  64%|██████▍   | 9/14 [00:07<00:03,  1.43it/s]Loading Individual 46:  71%|███████▏  | 10/14 [00:08<00:02,  1.58it/s]Loading Individual 38:  71%|███████▏  | 10/14 [00:08<00:02,  1.58it/s]Loading Individual 38:  79%|███████▊  | 11/14 [00:09<00:02,  1.20it/s]Loading Individual 49:  79%|███████▊  | 11/14 [00:09<00:02,  1.20it/s]Loading Individual 49:  86%|████████▌ | 12/14 [00:11<00:02,  1.27s/it]Loading Individual 36:  86%|████████▌ | 12/14 [00:11<00:02,  1.27s/it]Loading Individual 36:  93%|█████████▎| 13/14 [00:13<00:01,  1.30s/it]Loading Individual 47:  93%|█████████▎| 13/14 [00:13<00:01,  1.30s/it]Loading Individual 47: 100%|██████████| 14/14 [00:14<00:00,  1.42s/it]Loading Individual 47: 100%|██████████| 14/14 [00:14<00:00,  1.05s/it]
+Loading testing data...
+  0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:   0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:  50%|█████     | 1/2 [00:03<00:03,  3.95s/it]Loading Individual 44:  50%|█████     | 1/2 [00:03<00:03,  3.95s/it]Loading Individual 44: 100%|██████████| 2/2 [00:04<00:00,  1.91s/it]Loading Individual 44: 100%|██████████| 2/2 [00:04<00:00,  2.22s/it]
+EEG Train Before Normalization - Shape: torch.Size([4018, 10, 64, 269]), Min: -3.9049, Max: 7.9372, Mean: -0.0000
+fMRI Train Before Normalization - Shape: torch.Size([4018, 30, 64, 64]), Min: -0.8632, Max: 4.4943, Mean: 0.0002
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 359, in <module>
+    main()
+  File "202410_Diffusion.py", line 222, in main
+    eeg_train = normalize_per_sample(eeg_train)
+  File "202410_Diffusion.py", line 130, in normalize_per_sample
+    min_vals = data.view(data.shape[0], -1).min(dim=1)[0].reshape(-1, 1, 1, 1)
+RuntimeError: view size is not compatible with input tensor's size and stride (at least one dimension spans across two contiguous subspaces). Use .reshape(...) instead.

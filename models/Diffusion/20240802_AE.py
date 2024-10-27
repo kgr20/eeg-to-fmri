@@ -88,6 +88,12 @@ class DeeperWiderConvAutoencoder2D(nn.Module):
         x = self.decoder(x)
         return x
 
+    def encode(self, x):
+        return self.encoder(x)
+
+    def decode(self, x):
+        return self.decoder(x)
+
 def define_G(input_nc, output_nc, ngf, netG, norm='instance', use_dropout=False, init_type='normal', init_gain=0.02, gpu_ids=[]):
     """Create a generator
 
@@ -281,63 +287,65 @@ model = DeeperWiderConvAutoencoder2D(input_nc=10, output_nc=30, output_size=64).
 # # Kris's original code
 # model = DeeperWiderConvAutoencoder3D().to(device)
 
-# Define the loss function
+import torch
+import torch.nn as nn
+import torch.optim as optim
+
+# Assuming you have already defined DeeperWiderConvAutoencoder2D and SSIMLoss classes
+# Define the functions for adding noise and denoising
+def add_noise(latent, noise_level):
+    noise = torch.randn_like(latent) * noise_level
+    return latent + noise
+
+def denoise(latent, denoise_steps):
+    for _ in range(denoise_steps):
+        latent = latent - (latent * 0.1)  # Placeholder for actual denoising
+    return latent
+
+# Define the Autoencoder with Diffusion class
+class AutoencoderWithDiffusion(nn.Module):
+    def __init__(self, encoder, decoder, noise_level=0.1, denoise_steps=5):
+        super(AutoencoderWithDiffusion, self).__init__()
+        self.encoder = encoder
+        self.decoder = decoder
+        self.noise_level = noise_level
+        self.denoise_steps = denoise_steps
+
+    def forward(self, x):
+        latent = self.encoder.encode(x)
+        noisy_latent = add_noise(latent, self.noise_level)
+        denoised_latent = denoise(noisy_latent, self.denoise_steps)
+        output = self.decoder.decode(denoised_latent)
+        return output
+
+# Instantiate encoder and decoder
+encoder = DeeperWiderConvAutoencoder2D(input_nc=10, output_nc=256).to(device)  # Adjust dimensions as needed
+decoder = DeeperWiderConvAutoencoder2D(input_nc=256, output_nc=30).to(device)  # Adjust dimensions as needed
+
+# Create the model with diffusion
+model = AutoencoderWithDiffusion(encoder, decoder).to(device)
+
+# Define the loss function and optimizer
 criterion = SSIMLoss().to(device)
-
-# Optimizer and scheduler
 optimizer = optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
-scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
-# Training loop with timing and SSIM tracking
-total_training_time = 0.0
-best_ssim = -1.0
-best_psnr = -1.0
-best_model_weights = None
-best_save_path = None
-
-pbar = tqdm(range(args.num_epochs), leave=True)
-
-calculate_ssim = torchmetrics.image.StructuralSimilarityIndexMeasure(data_range=1.0).to(device)
-
-for epoch in pbar:
-    epoch_start_time = time.time()
-
-    model.train()
-    running_loss = 0.0
+# Training loop
+for epoch in range(args.num_epochs):
     for inputs, labels in train_loader:
-        inputs = inputs.to(device)
-        labels = labels.to(device)
-        # labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
-
+        inputs, labels = inputs.to(device), labels.to(device)
         optimizer.zero_grad()
+        
         outputs = model(inputs)
-
         loss = criterion(outputs, labels)
         loss.backward()
-
         optimizer.step()
-        running_loss += loss.item()
 
-    epoch_loss = running_loss / len(train_loader)
-    scheduler.step(epoch_loss)
-
-    # track the latest lr
-    last_lr = optimizer.param_groups[0]["lr"]
-
-    epoch_end_time = time.time()
-    epoch_duration = epoch_end_time - epoch_start_time
-    total_training_time += epoch_duration
-
-    # Evaluation
-    model.eval()
+    # Evaluation and logging (e.g., SSIM, PSNR)
     ssim_score = 0.0
     psnr_score = 0.0
     with torch.no_grad():
         for inputs, labels in test_loader:
-            inputs = inputs.to(device)
-            labels = labels.to(device)
-            # labels = labels.permute(0, 4, 1, 2, 3)[:, :, :, :, :28]
-
+            inputs, labels = inputs.to(device)
             outputs = model(inputs)
             ssim_score += calculate_ssim(outputs, labels).item()
             psnr_score += calculate_psnr(outputs, labels)
@@ -351,8 +359,8 @@ for epoch in pbar:
     image = plot_comparison(labels_np, outputs_np, slice_idx=16)
 
     run.log({
-        "lr": last_lr,
-        "loss": epoch_loss,
+        "lr": optimizer.param_groups[0]["lr"],
+        "loss": loss.item(),
         "ssim": ssim_score,
         "psnr": psnr_score,
         "image": wandb.Image(image),
@@ -361,11 +369,9 @@ for epoch in pbar:
     if ssim_score > best_ssim:
         best_ssim = ssim_score
         best_psnr = psnr_score
-        # remove the latest model
         if best_save_path is not None:
             os.remove(best_save_path)
-        # Save the best model weights with SSIM and PSNR scores in the filename
         best_save_path = os.path.join(exp_dir, f"epoch{epoch}_ssim_{best_ssim:.4f}_psnr_{best_psnr:.2f}.pth")
         torch.save(model.state_dict(), best_save_path)
     
-    pbar.set_description(f'SSIM: {ssim_score:.3f} / PSNR: {psnr_score:.3f} / Loss: {epoch_loss:.3f} / Best SSIM: {best_ssim:.3f}')
+    pbar.set_description(f'SSIM: {ssim_score:.3f} / PSNR: {psnr_score:.3f} / Loss: {loss.item():.3f} / Best SSIM: {best_ssim:.3f}')

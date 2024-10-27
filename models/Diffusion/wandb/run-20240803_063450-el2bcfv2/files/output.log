@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "20240802_AE.py", line 348, in <module>
+    inputs, labels = inputs.to(device)
+ValueError: too many values to unpack (expected 2)

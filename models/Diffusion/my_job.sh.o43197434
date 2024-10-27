@@ -1,0 +1,8 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+wandb: Currently logged in as: kris-g-roos (kris-g-roos-National University of Singapore). Use `wandb login --relogin` to force relogin
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 338, in <module>
+    main()
+  File "202410_Diffusion.py", line 182, in main
+    train_list = [Path(indv).stem for indv in os.listdir(args.data_root) if Path(indv).stem not in test_list]
+FileNotFoundError: [Errno 2] No such file or directory: 'path_to_data'
