@@ -1,0 +1,23 @@
+module:cuda/11.2/11.2.2 is provided for EXPERIMENTAL use
+wandb: Currently logged in as: kris-g-roos (kris-g-roos-National University of Singapore). Use `wandb login --relogin` to force relogin
+Training Individuals: ['32', '35', '36', '37', '38', '39', '40', '42', '45', '46', '47', '48', '49', '50']
+Testing Individuals: ['43', '44']
+Loading training data...
+  0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   0%|          | 0/14 [00:00<?, ?it/s]Loading Individual 48:   7%|▋         | 1/14 [00:01<00:13,  1.02s/it]Loading Individual 37:   7%|▋         | 1/14 [00:01<00:13,  1.02s/it]Loading Individual 37:  14%|█▍        | 2/14 [00:01<00:11,  1.09it/s]Loading Individual 42:  14%|█▍        | 2/14 [00:01<00:11,  1.09it/s]Loading Individual 42:  21%|██▏       | 3/14 [00:02<00:10,  1.06it/s]Loading Individual 45:  21%|██▏       | 3/14 [00:02<00:10,  1.06it/s]Loading Individual 45:  29%|██▊       | 4/14 [00:03<00:10,  1.02s/it]Loading Individual 35:  29%|██▊       | 4/14 [00:03<00:10,  1.02s/it]Loading Individual 35:  36%|███▌      | 5/14 [00:04<00:08,  1.03it/s]Loading Individual 40:  36%|███▌      | 5/14 [00:04<00:08,  1.03it/s]Loading Individual 40:  43%|████▎     | 6/14 [00:05<00:07,  1.05it/s]Loading Individual 39:  43%|████▎     | 6/14 [00:05<00:07,  1.05it/s]Loading Individual 39:  50%|█████     | 7/14 [00:06<00:06,  1.06it/s]Loading Individual 32:  50%|█████     | 7/14 [00:06<00:06,  1.06it/s]Loading Individual 32:  57%|█████▋    | 8/14 [00:07<00:05,  1.08it/s]Loading Individual 50:  57%|█████▋    | 8/14 [00:07<00:05,  1.08it/s]Loading Individual 50:  64%|██████▍   | 9/14 [00:08<00:04,  1.07it/s]Loading Individual 46:  64%|██████▍   | 9/14 [00:08<00:04,  1.07it/s]Loading Individual 46:  71%|███████▏  | 10/14 [00:09<00:03,  1.06it/s]Loading Individual 38:  71%|███████▏  | 10/14 [00:09<00:03,  1.06it/s]Loading Individual 38:  79%|███████▊  | 11/14 [00:10<00:02,  1.04it/s]Loading Individual 49:  79%|███████▊  | 11/14 [00:10<00:02,  1.04it/s]Loading Individual 49:  86%|████████▌ | 12/14 [00:11<00:02,  1.07s/it]Loading Individual 36:  86%|████████▌ | 12/14 [00:11<00:02,  1.07s/it]Loading Individual 36:  93%|█████████▎| 13/14 [00:12<00:01,  1.03s/it]Loading Individual 47:  93%|█████████▎| 13/14 [00:12<00:01,  1.03s/it]Loading Individual 47: 100%|██████████| 14/14 [00:13<00:00,  1.05s/it]Loading Individual 47: 100%|██████████| 14/14 [00:13<00:00,  1.01it/s]
+Loading testing data...
+  0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:   0%|          | 0/2 [00:00<?, ?it/s]Loading Individual 43:  50%|█████     | 1/2 [00:01<00:01,  1.12s/it]Loading Individual 44:  50%|█████     | 1/2 [00:01<00:01,  1.12s/it]Loading Individual 44: 100%|██████████| 2/2 [00:02<00:00,  1.03s/it]Loading Individual 44: 100%|██████████| 2/2 [00:02<00:00,  1.04s/it]
+EEG Train Before Normalization - Shape: torch.Size([4018, 10, 64, 269]), Min: -3.9049, Max: 7.9372, Mean: -0.0000
+fMRI Train Before Normalization - Shape: torch.Size([4018, 30, 64, 64]), Min: -0.8632, Max: 4.4943, Mean: 0.0002
+EEG Train After Normalization - Shape: torch.Size([4018, 10, 64, 269]), Min: -3.9049, Max: 7.9372, Mean: -0.0000
+fMRI Train After Normalization - Shape: torch.Size([4018, 30, 64, 64]), Min: -1.0464, Max: 16.5764, Mean: 0.0000
+EEG Train After Padding - Shape: torch.Size([4018, 10, 64, 64]), Min: -2.9508, Max: 7.9370, Mean: -0.0000
+EEG Train Shape: torch.Size([4018, 10, 64, 64])
+fMRI Train Shape: torch.Size([4018, 30, 64, 64])
+EEG Test Shape: torch.Size([574, 10, 64, 64])
+fMRI Test Shape: torch.Size([574, 30, 64, 64])
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 476, in <module>
+    main()
+  File "202410_Diffusion.py", line 337, in main
+    test_dataset = EEGfMRIDataset2D(eeg_data=eeg_test, fmri_data=fmri_test, transform=None, fmri_transform=None)  # No augmentation for test
+TypeError: __init__() got an unexpected keyword argument 'transform'

@@ -1,0 +1,18 @@
+
+  0%|          | 0/100 [00:20<?, ?it/s]
+Traceback (most recent call last):
+  File "202410_Diffusion.py", line 478, in <module>
+    main()
+  File "202410_Diffusion.py", line 437, in main
+    image = plot_comparison_2d(labels_np, outputs_np, num_channels=3)  # Visualize first 3 channels
+  File "202410_Diffusion.py", line 209, in plot_comparison_2d
+    axes[i][0].imshow(label_img, cmap='gray')
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/matplotlib/_api/deprecation.py", line 459, in wrapper
+    return func(*args, **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/matplotlib/__init__.py", line 1414, in inner
+    return func(ax, *map(sanitize_sequence, args), **kwargs)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/matplotlib/axes/_axes.py", line 5487, in imshow
+    im.set_data(X)
+  File "/home/aca10131kr/anaconda3/envs/py38/lib/python3.8/site-packages/matplotlib/image.py", line 715, in set_data
+    raise TypeError("Invalid shape {} for image data"
+TypeError: Invalid shape (30, 64, 64) for image data
